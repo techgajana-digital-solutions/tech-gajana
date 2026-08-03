@@ -1,56 +1,147 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
-import { Calendar } from 'lucide-react'
+import { useState, useEffect, useCallback } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
-export default function EventsBanner() {
+interface Testimonial {
+  id: number
+  quote: string
+  authorName: string
+  authorRole: string
+  company: string
+}
+
+const testimonials: Testimonial[] = [
+  {
+    id: 1,
+    quote:
+      'They didn\u2019t just build what we asked for \u2014 they questioned the brief, pushed back where it mattered, and shipped something better than what we thought we wanted.',
+    authorName: 'Sarah Chen',
+    authorRole: 'VP of Product',
+    company: 'Northwind Labs',
+  },
+  {
+    id: 2,
+    quote:
+      'The mentorship program changed how our junior engineers think about system design. Six months in, they\u2019re reviewing senior PRs with real confidence.',
+    authorName: 'Marcus Reid',
+    authorRole: 'Engineering Director',
+    company: 'Fieldstone',
+  },
+  {
+    id: 3,
+    quote:
+      'Rare to find a team that\u2019s equally comfortable in a whiteboard session and a production incident at 2am. Both happened. Both went well.',
+    authorName: 'Priya Nathan',
+    authorRole: 'Co-founder & CTO',
+    company: 'Loom & Co.',
+  },
+]
+
+const AUTOPLAY_INTERVAL = 6000
+
+export default function Testimonials() {
+  const [index, setIndex] = useState(0)
+  const [direction, setDirection] = useState(1)
+  const [isPaused, setIsPaused] = useState(false)
+
+  const goTo = useCallback((newDirection: 1 | -1) => {
+    setDirection(newDirection)
+    setIndex((prev) => {
+      const next = prev + newDirection
+      if (next < 0) return testimonials.length - 1
+      if (next >= testimonials.length) return 0
+      return next
+    })
+  }, [])
+
+  useEffect(() => {
+    if (!AUTOPLAY_INTERVAL || isPaused) return
+    const timer = setInterval(() => goTo(1), AUTOPLAY_INTERVAL)
+    return () => clearInterval(timer)
+  }, [isPaused, goTo])
+
+  const active = testimonials[index]
+
+  const variants = {
+    enter: (dir: number) => ({
+      opacity: 0,
+      x: dir > 0 ? 40 : -40,
+      y: 12,
+    }),
+    center: {
+      opacity: 1,
+      x: 0,
+      y: 0,
+    },
+    exit: (dir: number) => ({
+      opacity: 0,
+      x: dir > 0 ? -40 : 40,
+      y: -12,
+    }),
+  }
+
   return (
-    <section id="events" className="py-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-gradient-to-r from-primary via-primary/90 to-accent rounded-3xl overflow-hidden shadow-lg">
-          <div className="grid md:grid-cols-2 gap-8 p-8 md:p-12 items-center">
-            {/* Left Content */}
-            <div className="text-white space-y-6">
-              <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-4 py-2 w-fit">
-                <Calendar size={18} />
-                <span className="text-sm font-medium">Upcoming Event</span>
-              </div>
-              <div>
-                <h2 className="text-4xl sm:text-5xl font-bold mb-4">
-                  Tech Summit 2024
-                </h2>
-                <p className="text-xl text-white/90 max-w-lg">
-                  Join industry leaders for workshops, networking, and hands-on learning sessions.
-                </p>
-              </div>
-              <div className="space-y-3">
-                <p className="text-lg font-medium">
-                  📅 July 15-17, 2024 | 🌍 Virtual & In-Person
-                </p>
-                <p className="text-white/80">
-                  Early bird registration now open — limited spots available!
-                </p>
-              </div>
-              <Button className="bg-white hover:bg-white/90 text-primary rounded-lg h-12 px-8 font-medium">
-                Register Now
-              </Button>
-            </div>
+    <section className="relative min-h-screen flex flex-col items-center justify-center bg-[#f4f4f4] px-6 sm:px-10 lg:px-16 py-24">
+      <div className="relative w-full max-w-5xl text-center overflow-hidden">
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div
+            key={active.id}
+            custom={direction}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <p className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-medium text-gray-900 tracking-tight leading-[1.15] mb-10">
+              &ldquo;{active.quote}&rdquo;
+            </p>
 
-            {/* Right Visual */}
-            <div className="flex items-center justify-center">
-              <div className="relative w-full h-64">
-                <div className="absolute inset-0 bg-white/10 rounded-2xl flex items-center justify-center">
-                  <div className="text-center space-y-4">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-full">
-                      <Calendar size={40} className="text-white" />
-                    </div>
-                    <p className="text-white/80 text-sm font-medium">Event Preview</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+            <p className="text-sm uppercase tracking-widest text-gray-500">
+              {active.authorName} &mdash; {active.authorRole}, {active.company}
+            </p>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      <div
+        className="flex items-center gap-4 mt-16"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
+        <button
+          onClick={() => goTo(-1)}
+          aria-label="Previous testimonial"
+          className="w-12 h-12 rounded-full border-2 border-gray-900 bg-transparent hover:bg-[#00ff00] hover:border-transparent flex items-center justify-center transition-colors duration-150"
+        >
+          <ChevronLeft size={20} className="text-gray-900" />
+        </button>
+
+        <div className="flex items-center gap-2 px-2">
+          {testimonials.map((t, i) => (
+            <button
+              key={t.id}
+              onClick={() => {
+                setDirection(i > index ? 1 : -1)
+                setIndex(i)
+              }}
+              aria-label={`Go to testimonial ${i + 1}`}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                i === index ? 'w-6 bg-gray-900' : 'w-1.5 bg-gray-300 hover:bg-gray-400'
+              }`}
+            />
+          ))}
         </div>
+
+        <button
+          onClick={() => goTo(1)}
+          aria-label="Next testimonial"
+          className="w-12 h-12 rounded-full border-2 border-gray-900 bg-transparent hover:bg-[#00ff00] hover:border-transparent flex items-center justify-center transition-colors duration-150"
+        >
+          <ChevronRight size={20} className="text-gray-900" />
+        </button>
       </div>
     </section>
   )

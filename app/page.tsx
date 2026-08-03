@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
+import { ReactLenis } from 'lenis/react'
 import Navbar from '@/components/navbar'
 import Hero from '@/components/hero'
 import TrustBar from '@/components/trust-bar'
@@ -27,18 +27,20 @@ export default function Home() {
   }, [])
 
   return (
-    <main className="bg-background">
-      <Navbar isScrolled={isScrolled} />
-      <Hero />
-      <TrustBar />
-      <Services />
-      <Portfolio />
-      <Mentors />
-      <Testimonials />
-      <Articles />
-      <EventsBanner />
-      <FinalCTA />
-      <Footer />
-    </main>
+    <ReactLenis root options={{ lerp: 0.1, duration: 1.2 }}>
+      <main className="bg-background">
+        <Navbar isScrolled={isScrolled} />
+        <Hero />
+        <TrustBar />
+        <Services />
+        <Portfolio />
+        <Mentors />
+        <Testimonials />
+        <Articles />
+        <EventsBanner />
+        <FinalCTA />
+        <Footer />
+      </main>
+    </ReactLenis>
   )
 }

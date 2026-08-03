@@ -24,8 +24,8 @@ interface MouseState {
 // Tunables
 // ---------------------------------------------------------------------------
 
-const PARTICLE_COUNT = 2500;
-const PARTICLE_RADIUS = 8;
+const PARTICLE_COUNT = 420;
+const PARTICLE_RADIUS = 1.8;
 const GRAVITY = 0.35;
 const FLOOR_FRICTION = 0.82; // damping when resting on floor
 const AIR_DRAG = 0.995;
@@ -33,12 +33,6 @@ const REPEL_RADIUS = 90;
 const REPEL_STRENGTH = 3.2;
 const SEPARATION_STRENGTH = 0.55; // how hard neighboring particles push apart
 const GRID_CELL = PARTICLE_RADIUS * 4; // spatial hash cell size
-
-// Click / tap burst settings
-const MAX_TOTAL_PARTICLES = 4000;
-const SPAWN_COUNT = 40;
-const SPAWN_SPEED_MIN = 2;
-const SPAWN_SPEED_MAX = 6;
 
 // ---------------------------------------------------------------------------
 // Component
@@ -127,31 +121,6 @@ const Footer: React.FC = () => {
       });
     }
   }, [seedParticles]);
-
-  // -------------------------------------------------------------------------
-  // Spawn a burst of particles at a point (click / tap)
-  // -------------------------------------------------------------------------
-  const spawnBurst = useCallback((x: number, y: number) => {
-    const particles = particlesRef.current;
-    const room = MAX_TOTAL_PARTICLES - particles.length;
-    if (room <= 0) return;
-
-    const count = Math.min(SPAWN_COUNT, room);
-
-    for (let i = 0; i < count; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const speed =
-        SPAWN_SPEED_MIN + Math.random() * (SPAWN_SPEED_MAX - SPAWN_SPEED_MIN);
-
-      particles.push({
-        x,
-        y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        r: PARTICLE_RADIUS,
-      });
-    }
-  }, []);
 
   // -------------------------------------------------------------------------
   // Physics step
@@ -308,26 +277,13 @@ const Footer: React.FC = () => {
     mouseRef.current.active = false;
   };
 
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    spawnBurst(e.clientX - rect.left, e.clientY - rect.top);
-  };
-
-  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-    const rect = containerRef.current?.getBoundingClientRect();
-    const touch = e.touches[0];
-    if (!rect || !touch) return;
-    spawnBurst(touch.clientX - rect.left, touch.clientY - rect.top);
-  };
-
   // -------------------------------------------------------------------------
   // Footer navigation content
   // -------------------------------------------------------------------------
   const columns: { title: string; links: string[] }[] = [
-    { title: "Channels", links: ["Instagram", "LinkedIn", "YouTube"] },
+    { title: "Channels", links: ["Twitter / X", "Instagram", "LinkedIn", "YouTube"] },
     { title: "Legalites", links: ["Privacy Policy", "Terms of Service", "Cookies", "Licensing"] },
-    { title: "Contact", links: ["TEchGajana@studio.com", "+91 9876543210", "Support", "Press"] },
+    { title: "Contact", links: ["hello@studio.com", "+1 (555) 010-0101", "Support", "Press"] },
     { title: "Headquarters", links: ["123 Studio Ave", "San Francisco, CA", "94103", "United States"] },
   ];
 
@@ -338,23 +294,23 @@ const Footer: React.FC = () => {
       onMouseLeave={handleMouseLeave}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      onClick={handleClick}
-      onTouchStart={handleTouchStart}
-      className="relative w-full h-[100vh] min-h-[640px] overflow-hidden bg-black select-none cursor-pointer"
+      className="relative w-full h-[100vh] min-h-[640px] overflow-hidden bg-black select-none"
     >
       {/* Particle canvas background */}
-      <canvas ref={canvasRef} className="absolute inset-0 z-0" aria-hidden="true" />
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 z-0"
+        aria-hidden="true"
+      />
 
       {/* Content layer */}
       <div className="relative z-10 flex h-full w-full flex-col pointer-events-none">
         {/* Center graphic placeholder */}
         <div className="flex flex-1 items-start justify-center pt-16">
-          <div className="flex h-24 w-24 items-center justify-center rounded-xl border border-white bg-white backdrop-blur-sm md:h-32 md:w-32">
-            <img
-              src="/tg.png"
-              alt="Studio Logo"
-              className="h-50 w-50 object-contain"
-            />
+          <div className="flex h-24 w-24 items-center justify-center rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm md:h-32 md:w-32">
+            <span className="text-xs uppercase tracking-widest text-white/50">
+              logo
+            </span>
           </div>
         </div>
 

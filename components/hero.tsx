@@ -2,6 +2,8 @@
 
 import { Button } from '@/components/ui/button'
 import { ArrowRight } from 'lucide-react'
+import IntroVideo from '@/components/intro-video'
+
 
 export default function Hero() {
   return (
@@ -34,28 +36,10 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Right Column - Illustration */}
+          {/* Right Column - Intro Video */}
           <div className="flex items-center justify-center">
-            <div className="relative w-full h-96 bg-gradient-to-br from-primary/10 via-accent/10 to-primary/5 rounded-2xl overflow-hidden">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-64 h-64 bg-primary/20 rounded-full blur-3xl absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
-                <div className="w-48 h-48 bg-accent/20 rounded-full blur-2xl absolute top-1/4 right-0 -translate-y-1/4"></div>
-                <div className="relative z-10 text-center">
-                  <div className="inline-flex items-center justify-center w-32 h-32 bg-white rounded-2xl shadow-lg border border-border">
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="w-4 h-4 bg-primary rounded"></div>
-                      <div className="w-4 h-4 bg-accent rounded"></div>
-                      <div className="w-4 h-4 bg-primary/60 rounded"></div>
-                      <div className="w-4 h-4 bg-accent/60 rounded"></div>
-                      <div className="w-4 h-4 bg-primary rounded"></div>
-                      <div className="w-4 h-4 bg-accent/40 rounded"></div>
-                      <div className="w-4 h-4 bg-primary/40 rounded"></div>
-                      <div className="w-4 h-4 bg-accent rounded"></div>
-                      <div className="w-4 h-4 bg-primary/20 rounded"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div className="relative w-full rounded-2xl overflow-hidden shadow-lg border border-border">
+              <IntroVideo />
             </div>
           </div>
         </div>
