@@ -174,7 +174,7 @@ function BentoCard({ project }: { project: Project }) {
 export default function PortfolioPage() {
   return (
     <>
-      <Navbar isScrolled={true} />
+      <Navbar />
 
       {/* Deep Dark Theme Wrapper */}
       <main className="relative bg-slate-950 pt-32 pb-32 min-h-screen overflow-hidden selection:bg-emerald-500 selection:text-slate-950">

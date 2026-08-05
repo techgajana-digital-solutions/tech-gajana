@@ -240,9 +240,9 @@ export default function CoursesPage() {
 
   return (
     <>
-      <Navbar isScrolled={true} />
+      <Navbar />
 
-      <main className="relative min-h-screen bg-[#0a0a0a] text-slate-50 pt-32 pb-32 overflow-hidden selection:bg-primary selection:text-[#0a0a0a]">
+      <main className="relative min-h-screen bg-white text-slate-50 pt-32 pb-32 overflow-hidden selection:bg-white selection:text-[#0a0a0a]">
         
         {/* Animated Background Mesh */}
         <div className="absolute top-[-20%] left-[10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />

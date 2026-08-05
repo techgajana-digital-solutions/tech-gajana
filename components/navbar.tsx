@@ -13,7 +13,7 @@ const navLinks = [
   { label: 'Events', href: '/events' },
 ]
 
-export default function DarkNavbar() {
+export default function Navbar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const pathname = usePathname()
 
@@ -45,7 +45,7 @@ export default function DarkNavbar() {
                 className={`px-4 py-2 text-sm font-medium transition-colors rounded-full ${
                   isActive
                     ? "text-white bg-primary"
-                    : "text-slate-400 hover:text-white hover:bg-primary/10"
+                    : "text-slate-400 hover:text-white hover:bg-accent"
                 }`}
               >
                 {link.label}
@@ -64,7 +64,7 @@ export default function DarkNavbar() {
           </a>
           <a
             href="/signup"
-            className="inline-flex items-center gap-1.5 bg-primary hover:bg-emerald-400 text-white text-sm font-semibold px-5 py-2 rounded-full transition-colors"
+            className="inline-flex items-center gap-1.5 bg-primary hover:bg-accent text-white text-sm font-semibold px-5 py-2 rounded-full transition-colors"
           >
             Sign Up
           </a>
