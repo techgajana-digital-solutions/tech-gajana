@@ -1,1 +1,9 @@
 #4F46E5
+ {
+    title: 'CycleStore',
+    description: 'CycleStore Billing Application.',
+    tags: ['Flutter'],
+    image: '/cycle.jpeg',
+    className: 'col-span-4 md:col-span-2 md:col-start-9 md:-mt-15', // Overlapping masonry feel,
+    url: '#',
+  },

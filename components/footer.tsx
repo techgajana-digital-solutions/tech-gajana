@@ -327,7 +327,7 @@ const Footer: React.FC = () => {
   const columns: { title: string; links: string[] }[] = [
     { title: "Channels", links: ["Instagram", "LinkedIn", "YouTube"] },
     { title: "Legalites", links: ["Privacy Policy", "Terms of Service", "Cookies", "Licensing"] },
-    { title: "Contact", links: ["TEchGajana@studio.com", "+91 9876543210", "Support", "Press"] },
+    { title: "Contact", links: ["TechGajana@studio.com", "+91 9876543210", "Support", "Press"] },
     { title: "Headquarters", links: ["123 Studio Ave", "San Francisco, CA", "94103", "United States"] },
   ];
 
@@ -359,7 +359,7 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Bottom navigation grid */}
-        <div className="w-full px-6 pb-8 md:px-12 md:pb-12">
+        <div className="flex-1 w-full px-6 pb-8 md:px-12 md:pb-12">
           <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
             {/* Left: massive headline */}
             <h2 className="text-4xl font-bold leading-[0.95] text-white sm:text-5xl md:text-7xl lg:text-8xl">
@@ -369,7 +369,7 @@ const Footer: React.FC = () => {
             </h2>
 
             {/* Right: 4-column link grid */}
-            <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 md:w-1/2 md:gap-6">
+            <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 md:w-1/2 md:gap-6 align-items-start md:justify-end">
               {columns.map((col) => (
                 <div key={col.title} className="flex flex-col gap-3">
                   <h3 className="text-sm font-semibold uppercase tracking-wider text-white">

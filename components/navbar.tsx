@@ -6,8 +6,8 @@ import { Menu, X } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
 const navLinks = [
-  { label: 'Portfolio', href: '/portfolio' },
   { label: 'Courses', href: '/courses' },
+  { label: 'Portfolio', href: '/portfolio' },
   { label: 'Store', href: '/store' },
   { label: 'Articles', href: '/articles' },
   { label: 'Events', href: '/events' },
@@ -27,7 +27,7 @@ export default function Navbar() {
       >
         {/* Logo */}
         <a href="/" className="flex items-center gap-2 flex-shrink-0">
-          <div className="w-8 h-8 rounded-full overflow-hidden bg-white/10 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full overflow-hidden bg-white flex items-center justify-center">
             <img src="/tg.png" alt="TechGajana" className="w-full h-full object-contain" />
           </div>
           <span className="font-bold text-primary hidden sm:inline">TechGajana</span>

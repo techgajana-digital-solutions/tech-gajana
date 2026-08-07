@@ -143,7 +143,7 @@ function StackedBookCard({ article, index, totalCards }: { article: Article; ind
             </span>
           </div>
 
-          <h3 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight mb-4 leading-[1.15] group-hover:text-indigo-600 transition-colors">
+          <h3 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight mb-4 leading-[1.15] group-hover:text-primary transition-colors">
             {article.title}
           </h3>
           
@@ -189,11 +189,9 @@ export default function Articles() {
         
         {/* Section Header */}
         <div className="text-center mb-24">
-          <div className="inline-flex items-center justify-center p-3 bg-white/60 backdrop-blur-md rounded-2xl shadow-sm border border-white mb-6">
-            <BookOpen className="text-indigo-600 w-6 h-6" />
-          </div>
+         
           <h2 className="text-5xl sm:text-6xl font-extrabold text-gray-900 tracking-tight mb-6">
-            The Knowledge <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Library</span>
+            The Knowledge <span className="text-transparent bg-clip-text bg-primary">Library</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto font-medium">
             Scroll down to explore our latest research, tutorials, and deep dives curated by industry experts.
