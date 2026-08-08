@@ -28,8 +28,8 @@ export default function Home() {
 
   return (
     <ReactLenis root options={{ lerp: 0.1, duration: 1.2 }}>
-      <main className="bg-background">
-        <Navbar isScrolled={isScrolled} />
+      {/* <main className="bg-background max-w-[100vw]"> */}
+        <Navbar />
         <Hero />
         <TrustBar />
         <Services />
@@ -40,7 +40,7 @@ export default function Home() {
         <EventsBanner />
         <FinalCTA />
         <Footer />
-      </main>
+      {/* </main> */}
     </ReactLenis>
   )
 }

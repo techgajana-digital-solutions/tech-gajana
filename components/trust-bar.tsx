@@ -41,7 +41,7 @@ function useCountUp(target: number, decimals: number, active: boolean) {
 }
 
 function StatCard({ stat, active }: { stat: Stat; active: boolean }) {
-  const Icon = stat.icon
+  const Icon = stat.icon 
   const count = useCountUp(stat.value, stat.decimals ?? 0, active)
 
   return (

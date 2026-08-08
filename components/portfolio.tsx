@@ -11,7 +11,6 @@ interface Slide {
   image: string
 }
 
-
 const slides: Slide[] = [
   {
     category: 'E-Commerce Platform',
@@ -39,35 +38,43 @@ const slides: Slide[] = [
     headline: 'Comprehensive marketing strategy with SEO and social media integration.',
     buttonText: 'Read',
     image:
-      'https://plus.unsplash.com/premium_photo-1683872921964-25348002a392?q=80&w=435&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D ',
+      'https://plus.unsplash.com/premium_photo-1683872921964-25348002a392?q=80&w=435&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   },
 ]
 
-const CUBE_SIZE = 280
-const HALF = CUBE_SIZE / 2
-
 export default function Portfolio() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [isDesktop, setIsDesktop] = useState(false)
+  
+  // Dynamically calculate the cube size based on screen width
+  const [cubeSize, setCubeSize] = useState(260) // Default for mobile
 
   useEffect(() => {
-    const check = () => setIsDesktop(window.innerWidth >= 1024)
-    check()
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
+    const checkSize = () => {
+      // 340px for desktop, 260px for mobile to prevent overflow
+      setCubeSize(window.innerWidth >= 1024 ? 280 : 260) 
+    }
+    checkSize()
+    window.addEventListener('resize', checkSize)
+    return () => window.removeEventListener('resize', checkSize)
   }, [])
+
+  const half = cubeSize / 2
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end end'],
   })
+  // For 4 slides: movePercent = (4 - 1) * (100 / 4) = 75%
+  const movePercent = (slides.length - 1) * (100 / slides.length)
 
+  // Text slides horizontally on ALL devices now
   const trackX = useTransform(
     scrollYProgress,
     [0, 1],
-    ['0%', `-${(slides.length - 1) * 100}%`]
+   ['0%', `-${movePercent}%`]
   )
 
+  // Cube rotates on ALL devices now
   const rotateY = useTransform(
     scrollYProgress,
     [0, 1],
@@ -75,29 +82,37 @@ export default function Portfolio() {
   )
 
   return (
-    <div ref={containerRef} className="relative bg-[#f4f4f4] lg:h-[400vh]">
-      <div className="lg:sticky lg:top-0 lg:h-screen overflow-hidden">
-        <div className="relative h-full w-full flex flex-col lg:flex-row lg:items-center">
-          <div className="relative lg:w-[55%] lg:h-full overflow-hidden flex flex-col lg:block">
+    
+    // 1. Removed lg: from h-[400vh] so the scroll space exists on mobile
+    <div ref={containerRef} className="relative bg-[#f4f4f4] h-[400vh]">
+      
+      {/* 2. Removed lg: from sticky, top-0, and h-screen */}
+      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden">
+        
+        {/* 3. Removed lg: from flex-row alignment, so it stacks neatly on mobile */}
+        <div className="relative h-full w-full flex flex-col lg:flex-row items-center">
+          
+          {/* Text Section: Top 50% on mobile, Left 55% on desktop */}
+          <div className="relative w-full h-[50%] lg:w-[55%] lg:h-full overflow-hidden flex items-center bg-[#f4f4f4] z-10">
             <motion.div
-              style={isDesktop ? { x: trackX } : undefined}
-              className="flex flex-col lg:flex-row lg:h-full"
+              style={{ x: trackX }}
+              className="flex w-full h-full items-center"
             >
               {slides.map((slide) => (
                 <div
                   key={slide.headline}
-                  className="flex-shrink-0 w-full lg:w-full lg:h-full flex items-center px-6 sm:px-10 lg:px-16 py-16 lg:py-0"
+                  className="flex-shrink-0 w-full lg:h-full flex flex-col justify-center px-6 sm:px-12 lg:px-20"
                 >
                   <div className="max-w-xl">
-                    <p className="text-sm font-medium text-gray-400 mb-4">
+                    <p className="text-xs sm:text-sm font-medium text-gray-500 mb-3 sm:mb-4 uppercase tracking-wider">
                       {slide.category}
                     </p>
-                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight leading-[1.1] mb-8">
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-[1.1] mb-6 sm:mb-8">
                       {slide.headline}
                     </h2>
-                    <button className="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-6 py-3 rounded-full transition-colors">
+                    <button className="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white text-sm font-bold uppercase tracking-wide px-6 py-3 sm:px-8 sm:py-4 rounded-full transition-transform hover:scale-105">
                       {slide.buttonText}
-                      <ArrowUpRight size={16} />
+                      <ArrowUpRight size={18} strokeWidth={2.5} />
                     </button>
                   </div>
                 </div>
@@ -105,10 +120,11 @@ export default function Portfolio() {
             </motion.div>
           </div>
 
-          <div className="relative lg:w-[45%] flex items-center justify-center py-12 lg:py-0">
+          {/* Cube Section: Bottom 50% on mobile, Right 45% on desktop */}
+          <div className="relative w-full h-[50%] lg:w-[45%] lg:h-full flex items-start lg:items-center justify-center pt-8 lg:pt-0">
             <div
               className="relative"
-              style={{ width: CUBE_SIZE, height: CUBE_SIZE, perspective: 1400 }}
+              style={{ width: cubeSize, height: cubeSize, perspective: 1400 }}
             >
               <motion.div
                 style={{
@@ -116,7 +132,7 @@ export default function Portfolio() {
                   height: '100%',
                   position: 'relative',
                   transformStyle: 'preserve-3d',
-                  rotateY: isDesktop ? rotateY : 0,
+                  rotateY,
                 }}
               >
                 {slides.map((slide, index) => {
@@ -124,20 +140,21 @@ export default function Portfolio() {
                   return (
                     <div
                       key={slide.headline}
-                      className="absolute inset-0 rounded-3x0 overflow-hidden shadow-2xl bg-cover bg-center"
+                      className="absolute inset-0 rounded-1xl overflow-hidden shadow-2xl bg-cover bg-center border border-black/5"
                       style={{
                         backgroundImage: `url(${slide.image})`,
-                        transform: `rotateY(${faceRotation}deg) translateZ(${HALF}px)`,
+                        transform: `rotateY(${faceRotation}deg) translateZ(${half}px)`,
                         backfaceVisibility: 'hidden',
                       }}
                     >
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/30" />
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-black/40" />
                     </div>
                   )
                 })}
               </motion.div>
             </div>
           </div>
+
         </div>
       </div>
     </div>

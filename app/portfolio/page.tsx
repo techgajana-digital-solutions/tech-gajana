@@ -15,7 +15,6 @@ interface Project {
   url: string
 }
 
-// 1. Project Data 
 const projects: Project[] = [
   {
     title: 'ADN Adventures',
@@ -57,13 +56,12 @@ const projects: Project[] = [
     className: 'col-span-1 md:col-span-6',
     url: 'https://barqprintings.com/',
   },
- {
+  {
     title: 'CycleStore',
     description: '',
     tags: ['Flutter'],
     image: '/cycle.png',
-    // FIXED: Changed col-span-4 to col-span-1 for mobile view
-    className: 'col-span-1 md:col-span-2 md:col-start-8 md:-mt-05', 
+    className: 'col-span-1 md:col-span-2 md:col-start-8 md:-mt-1',
     url: '#',
   },
   {
@@ -71,8 +69,7 @@ const projects: Project[] = [
     description: 'CycleStore Billing Application.',
     tags: ['Flutter'],
     image: '/cycle2.png',
-    // FIXED: Changed col-span-4 to col-span-1 for mobile view
-    className: 'col-span-1 md:col-span-2 md:col-start-10 md:-mt-10', 
+    className: 'col-span-1 md:col-span-2 md:col-start-10 md:-mt-10',
     url: '#',
   },
   {
@@ -84,14 +81,14 @@ const projects: Project[] = [
     url: '#',
   },
   {
-    title: '', 
-    description: '', 
-    tags: [], 
-    image: '/kid2.png', // Make sure this extension is correct in your folder
-    className: 'col-span-1 md:col-span-2 md:col-start-4 mt-12 md:mt-22',
+    title: '',
+    description: '',
+    tags: [],
+    image: '/kid2.png',
+    className: 'col-span-1 md:col-span-2 md:col-start-4 mt-12 md:mt-24',
     url: '#',
   },
-   {
+  {
     title: 'EuroZiel',
     description: 'Creative business website developed for Education consultancy.',
     tags: ['React Js', 'Javascript'],
@@ -102,26 +99,25 @@ const projects: Project[] = [
   {
     title: 'Hotel Billing',
     description: '',
-    tags: ['Flutter','Dashboard'],
+    tags: ['Flutter', 'Dashboard'],
     image: '/hotel.png',
     className: 'col-span-1 md:col-span-2 md:col-start-7 mt-12 md:mt-24',
     url: '#',
   },
   {
     title: '',
-    description: 'Billing and business management software solutions.', 
-    tags: [], 
-    image: '/hotel2.png', // Make sure this extension is correct in your folder
+    description: 'Billing and business management software solutions.',
+    tags: [],
+    image: '/hotel2.png',
     className: 'col-span-1 md:col-span-2 md:col-start-9 mt-12 md:mt-24',
     url: '#',
   },
 ]
 
-// 2. Magnetic Button (Now supports onClick interception)
 function MagneticButton({
   children,
   href,
-  onClick
+  onClick,
 }: {
   children: React.ReactNode
   href: string
@@ -150,19 +146,17 @@ function MagneticButton({
       ref={ref as any}
       onMouseMove={handleMouse}
       onMouseLeave={reset}
-      onClick={onClick} // Added click handler here
+      onClick={onClick}
       animate={{ x: position.x, y: position.y }}
       transition={{ type: 'spring', stiffness: 150, damping: 15, mass: 0.1 }}
-      className="relative flex items-center justify-center w-16 h-16 rounded-full bg-black text-white hover:bg-neutral-800 transition-colors duration-300"
+      className="relative flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-full bg-black text-white hover:bg-neutral-800 transition-colors duration-300"
     >
       {children}
     </motion.a>
   )
 }
 
-/// 3. Contact Form Modal Component (Detailed Agency Version)
 function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  // Prevent scrolling when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden'
@@ -175,7 +169,6 @@ function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -185,32 +178,29 @@ function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
             onClick={onClose}
           />
 
-          {/* Modal Content */}
           <motion.div
             initial={{ opacity: 0, y: 40, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-            className="relative w-full max-w-3xl bg-black text-white p-8 md:p-12 lg:p-16 shadow-2xl overflow-hidden overflow-y-auto max-h-[90vh]"
+            className="relative w-full max-w-3xl bg-black text-white p-6 sm:p-8 md:p-12 lg:p-16 shadow-2xl overflow-hidden overflow-y-auto max-h-[90vh]"
           >
             <button
               onClick={onClose}
-              className="absolute top-6 right-6 p-2 text-white/50 hover:text-white transition-colors"
+              className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 text-white/50 hover:text-white transition-colors"
             >
               <X size={24} />
             </button>
 
-            <h2 className="text-4xl md:text-5xl font-black tracking-tighter uppercase mb-2">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter uppercase mb-2">
               Project Inquiry.
             </h2>
-            <p className="text-neutral-400 font-medium mb-10 md:mb-12">
+            <p className="text-neutral-400 font-medium mb-8 md:mb-12 text-sm sm:text-base">
               Tell us about your next big idea and we'll get back to you within 24 hours.
             </p>
 
-            <form className="flex flex-col gap-8 md:gap-10" onSubmit={(e) => e.preventDefault()}>
-              
-              {/* Row 1: Name & Email */}
-              <div className="flex flex-col md:flex-row gap-8">
+            <form className="flex flex-col gap-6 sm:gap-8 md:gap-10" onSubmit={(e) => e.preventDefault()}>
+              <div className="flex flex-col md:flex-row gap-6 sm:gap-8">
                 <div className="flex-1">
                   <input
                     type="text"
@@ -229,8 +219,7 @@ function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                 </div>
               </div>
 
-              {/* Row 2: Phone & Company */}
-              <div className="flex flex-col md:flex-row gap-8">
+              <div className="flex flex-col md:flex-row gap-6 sm:gap-8">
                 <div className="flex-1">
                   <input
                     type="tel"
@@ -248,9 +237,8 @@ function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                 </div>
               </div>
 
-              {/* Row 3: Budget Range (Dropdown) */}
               <div>
-                <select 
+                <select
                   className="w-full bg-transparent border-b border-white/20 pb-4 text-sm font-bold tracking-widest uppercase focus:outline-none focus:border-white transition-colors text-white/30 focus:text-white cursor-pointer appearance-none"
                   defaultValue=""
                 >
@@ -262,7 +250,6 @@ function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                 </select>
               </div>
 
-              {/* Row 4: Message */}
               <div>
                 <textarea
                   required
@@ -271,10 +258,10 @@ function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                   className="w-full bg-transparent border-b border-white/20 pb-4 text-sm font-bold tracking-widest uppercase focus:outline-none focus:border-white transition-colors placeholder:text-white/30 resize-none"
                 />
               </div>
-              
+
               <button
                 type="submit"
-                className="self-start mt-4 px-10 py-5 bg-white text-black text-sm font-bold tracking-widest uppercase hover:bg-neutral-200 transition-colors"
+                className="w-full sm:w-auto self-stretch sm:self-start mt-2 sm:mt-4 px-8 sm:px-10 py-4 sm:py-5 bg-white text-black text-sm font-bold tracking-widest uppercase hover:bg-neutral-200 transition-colors"
               >
                 Submit Inquiry
               </button>
@@ -286,15 +273,16 @@ function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
   )
 }
 
-// 4. Project Card
-function ProjectCard({ 
-  project, 
-  index, 
-  onOpenContact 
-}: { 
-  project: Project; 
-  index: number;
-  onOpenContact: () => void;
+function ProjectCard({
+  project,
+  index,
+  onOpenContact,
+  containerClass,
+}: {
+  project: Project
+  index: number
+  onOpenContact: () => void
+  containerClass?: string
 }) {
   return (
     <motion.div
@@ -302,48 +290,55 @@ function ProjectCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-100px' }}
       transition={{ duration: 0.8, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
-      className={`group flex flex-col gap-6 cursor-pointer ${project.className}`}
+      className={`group flex flex-col gap-4 sm:gap-6 cursor-pointer ${containerClass ?? project.className}`}
     >
-      <div className="relative w-full overflow-hidden bg-transparent aspect-[4/3] md:aspect-auto">
-        {/* <motion.div
-          className="w-full h-full transform transition-transform duration-[1.5s] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-105"
-          style={{ backgroundImage: `url(${project.image})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}
-        /> */}
+      <div className="relative w-full overflow-hidden bg-transparent aspect-[2/3] md:aspect-auto">
         <motion.img
           src={project.image}
-          alt={project.title}
-          className="w-full object-contain transition-transform duration-[1.5s] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-105"
+          alt={project.title || 'Project image'}
+          onClick={() => {
+            if (typeof window !== 'undefined') {
+              const isMobile = window.matchMedia('(max-width: 767px)').matches
+              if (!isMobile) return
+
+              if (project.url === '#') {
+                onOpenContact()
+              } else if (project.url && project.url.startsWith('http')) {
+                window.open(project.url, '_blank', 'noopener noreferrer')
+              } else if (project.url) {
+                window.location.href = project.url
+              }
+            }
+          }}
+          className="w-full h-full object-contain transition-transform duration-[1.5s] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-105 cursor-pointer"
         />
 
-        <div className="absolute h-1/2 inset-0 bg-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 flex items-start justify-end p-6 md:p-12">
-          <div className="scale-50 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)]">
-            
-            {/* The Magic Happens Here */}
-            <MagneticButton 
+        {/* Action button — always visible on mobile (no hover available on touch),
+            fades in on hover only from md breakpoint up */}
+        <div className="hidden md:flex absolute h-1/2 inset-0 bg-transparent md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-700 items-start justify-end p-4 sm:p-6 md:p-12">
+          <div className="md:scale-50 md:opacity-0 md:group-hover:scale-100 md:group-hover:opacity-100 transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)]">
+            <MagneticButton
               href={project.url}
               onClick={(e) => {
                 if (project.url === '#') {
-                  e.preventDefault(); // Stops the page from jumping
-                  onOpenContact();    // Opens the modal
+                  e.preventDefault()
+                  onOpenContact()
                 }
               }}
             >
-              <ArrowUpRight size={28} strokeWidth={2} />
+              <ArrowUpRight size={24} strokeWidth={2} />
             </MagneticButton>
-
           </div>
         </div>
       </div>
 
-
-      {/* Text block (hidden if empty, perfect for your decorative images) */}
       {project.title && (
         <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-2 md:gap-8 pr-4">
           <div className="flex flex-col">
-            <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-black uppercase leading-none group-hover:text-neutral-500 transition-colors duration-500">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tighter text-black uppercase leading-none group-hover:text-neutral-500 transition-colors duration-500">
               {project.title}
             </h2>
-            <div className="flex flex-wrap gap-3 mt-4">
+            <div className="flex flex-wrap gap-2 sm:gap-3 mt-3 sm:mt-4">
               {project.tags.map((tag) => (
                 <span key={tag} className="text-xs font-bold tracking-[0.2em] uppercase text-neutral-400">
                   {tag}
@@ -361,52 +356,81 @@ function ProjectCard({
 }
 
 export default function PortfolioPage() {
-  // State to control the Contact Modal
   const [isContactModalOpen, setIsContactModalOpen] = useState(false)
 
   return (
     <>
       <Navbar />
 
-      <main className="relative bg-white text-black pt-32 pb-48 min-h-screen overflow-x-hidden selection:bg-black selection:text-white">
-        
-        <section className="relative max-w-[1400px] mx-auto px-6 md:px-12 pt-12 pb-24 md:pt-32 md:pb-48">
+      <main className="relative bg-white text-black pt-24 sm:pt-32 pb-32 sm:pb-48 min-h-screen overflow-x-hidden selection:bg-black selection:text-white">
+        <section className="relative max-w-[1400px] mx-auto px-4 sm:px-6 md:px-12 pt-8 sm:pt-12 pb-16 sm:pb-24 md:pt-32 md:pb-48">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           >
-            <h1 className="text-[14vw] md:text-[11vw] font-black tracking-tighter uppercase leading-[0.85] mb-8">
+            <h1 className="text-[16vw] md:text-[11vw] font-black tracking-tighter uppercase leading-[0.85] mb-6 sm:mb-8">
               Selected<br />
               <span className="text-neutral-300">Work.</span>
             </h1>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-              <p className="md:col-span-5 md:col-start-8 text-lg md:text-2xl font-medium text-neutral-600 leading-relaxed">
+              <p className="md:col-span-5 md:col-start-8 text-base sm:text-lg md:text-2xl font-medium text-neutral-600 leading-relaxed">
                 An asymmetrical showcase of sophisticated infrastructure, hardware innovation, and premium digital experiences.
               </p>
             </div>
           </motion.div>
         </section>
 
-        <section className="max-w-[1400px] mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-y-24 md:gap-x-12">
-            {projects.map((project, index) => (
-              <ProjectCard 
-                key={index} 
-                project={project} 
-                index={index} 
-                onOpenContact={() => setIsContactModalOpen(true)} // Passes the trigger to the card
-              />
-            ))}
+        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-12">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-y-12 sm:gap-y-16 md:gap-y-24 md:gap-x-12">
+            {(() => {
+              const rows: JSX.Element[] = []
+              for (let i = 0; i < projects.length; i++) {
+                // group pairs for mobile: indices 5+6, 7+8, 10+11
+                if (i === 5 || i === 7 || i === 10) {
+                  rows.push(
+                    <div key={`group-${i}`} className="flex gap-4 md:contents">
+                      <div className={`${projects[i].className} w-1/2 md:w-auto`}>
+                        <ProjectCard
+                          project={projects[i]}
+                          index={i}
+                          onOpenContact={() => setIsContactModalOpen(true)}
+                          containerClass="w-full"
+                        />
+                      </div>
+                      <div className={`${projects[i + 1].className} w-1/2 md:w-auto`}>
+                        <ProjectCard
+                          project={projects[i + 1]}
+                          index={i + 1}
+                          onOpenContact={() => setIsContactModalOpen(true)}
+                          containerClass="w-full"
+                        />
+                      </div>
+                    </div>
+                  )
+                  i++ // skip next since grouped
+                } else {
+                  rows.push(
+                    <ProjectCard
+                      key={i}
+                      project={projects[i]}
+                      index={i}
+                      onOpenContact={() => setIsContactModalOpen(true)}
+                      containerClass={projects[i].className}
+                    />
+                  )
+                }
+              }
+              return rows
+            })()}
           </div>
         </section>
       </main>
 
-      {/* Render the Modal overlay at the bottom */}
-      <ContactModal 
-        isOpen={isContactModalOpen} 
-        onClose={() => setIsContactModalOpen(false)} 
+      <ContactModal
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
       />
 
       <Footer />
