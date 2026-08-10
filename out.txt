@@ -1,0 +1,43 @@
+app
+├── apple-icon.png
+├── articles
+│   └── page.tsx
+├── courses
+│   └── page.tsx
+├── events
+│   └── page.tsx
+├── favicon.ico
+├── globals.css
+├── icon0.svg
+├── icon1.png
+├── layout.tsx
+├── manifest.json
+├── page.tsx
+├── portfolio
+│   └── page.tsx
+└── store
+    └── page.tsx
+
+6 directories, 13 files
+public
+├── Euroziel.png
+├── adn.png
+├── apple-icon.png
+├── cycle.png
+├── cycle2.png
+├── hotel.png
+├── hotel2.png
+├── icebay.png
+├── intro.mp4
+├── kid.png
+├── kid2.png
+├── metaport.png
+├── neidhal.png
+├── printers.png
+├── readme
+├── tg.png
+├── web-app-manifest-192x192.png
+├── web-app-manifest-512x512.png
+└── wirl.jpeg
+
+1 directory, 19 files

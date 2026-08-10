@@ -3,26 +3,77 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'TechGajana - Software, Mentorship & Tech Innovation',
-  description: 'Professional tech solutions including software development, live mentorship courses, e-commerce tech store, and research publishing for students and builders.',
-  generator: 'v0.app',
-  icons: {
-    icon: [
+  metadataBase: new URL('https://www.techgajana.org'), 
+
+  title: {
+    default: 'TechGajana - Software, Mentorship & Tech Innovation',
+    template: '%s | TechGajana',
+  },
+  description:
+    'TechGajana delivers professional software development, live mentorship courses, an e-commerce tech store, and research publishing for students and builders looking to grow their skills and ship real products.',
+  keywords: [
+    'TechGajana Pvt. Ltd.',
+    'TechGajana Private Limited',
+    'TechGajana',
+    'software development',
+    'tech mentorship',
+    'live coding courses',
+    'e-commerce tech store',
+    'research publishing',
+    'student tech mentorship',
+    'software solutions',
+  ],
+  authors: [{ name: 'TechGajana' }],
+  creator: 'TechGajana',
+  publisher: 'TechGajana',
+  generator: 'TechGajana',
+
+  manifest: '/manifest.json',
+
+  alternates: {
+    canonical: '/',
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
+
+  openGraph: {
+    type: 'website',
+    url: 'https://www.techgajana.org',
+    siteName: 'TechGajana',
+    title: 'TechGajana - Software, Mentorship & Tech Innovation',
+    description:
+      'Professional tech solutions including software development, live mentorship courses, e-commerce tech store, and research publishing for students and builders.',
+    images: [
       {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/tg.png',
-        type: 'image/svg+xml',
+        url: '/tg.png', // recommend 1200x630
+        width: 1200,
+        height: 630,
+        alt: 'TechGajana - Software, Mentorship & Tech Innovation',
       },
     ],
-    apple: '/tg.png',
+    locale: 'en_US',
   },
+
+  twitter: {
+    card: 'summary_large_image',
+    title: 'TechGajana - Software, Mentorship & Tech Innovation',
+    description:
+      'Professional tech solutions including software development, live mentorship courses, e-commerce tech store, and research publishing for students and builders.',
+    images: ['/tg.png'],
+    // creator: '@yourhandle',
+  },
+
+  category: 'technology',
 }
 
 export const viewport: Viewport = {
@@ -38,6 +89,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="bg-background">
+      <head>
+        <meta name="apple-mobile-web-app-title" content="TechGajana" />
+      </head>
       <body className="antialiased bg-background text-foreground">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
