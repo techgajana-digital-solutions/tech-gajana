@@ -57,7 +57,7 @@ const mentors: Mentor[] = [
   },
 ]
 
-export default function Mentors() {
+export default function Mentors({ onOpenContact }: { onOpenContact?: () => void }) {
   // Start at index 0 immediately so it displays on the page load
   const [activeMentorIndex, setActiveMentorIndex] = useState<number>(0)
 
@@ -152,7 +152,9 @@ export default function Mentors() {
                     </a>
                   </div>
                   
-                  <button className="inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-gray-900 text-base font-bold px-8 py-3.5 rounded-full transition-colors shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:scale-105 transform duration-200 pointer-events-auto">
+                  <button
+                   onClick={onOpenContact}
+                   className="inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-gray-900 text-base font-bold px-8 py-3.5 rounded-full transition-colors shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:scale-105 transform duration-200 pointer-events-auto">
                     Book a session
                   </button>
                 </div>

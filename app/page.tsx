@@ -13,9 +13,11 @@ import Articles from '@/components/articles'
 import EventsBanner from '@/components/events-banner'
 import FinalCTA from '@/components/final-cta'
 import Footer from '@/components/footer'
+import ContactModal from '@/components/contact-modal'
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false)
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,19 +30,21 @@ export default function Home() {
 
   return (
     <ReactLenis root options={{ lerp: 0.1, duration: 1.2 }}>
-      {/* <main className="bg-background max-w-[100vw]"> */}
-        <Navbar />
-        <Hero />
-        <TrustBar />
-        <Services />
-        <Portfolio />
-        <Mentors />
-        <Testimonials />
-        <Articles />
-        <EventsBanner />
-        <FinalCTA />
-        <Footer />
-      {/* </main> */}
+      <Navbar />
+      <Hero onOpenContact={() => setIsContactModalOpen(true)} />
+      <TrustBar />
+      <Services />
+      <Portfolio />
+      <Mentors onOpenContact={() => setIsContactModalOpen(true)} />
+      <Testimonials />
+      <Articles />
+      <EventsBanner />
+      <FinalCTA onOpenContact={() => setIsContactModalOpen(true)} />
+      <Footer />
+      <ContactModal
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
+      />
     </ReactLenis>
   )
 }

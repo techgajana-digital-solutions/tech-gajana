@@ -1,8 +1,10 @@
 'use client'
 
-import { ArrowRight, Mail, MessageCircle, GraduationCap, Layers } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { ArrowRight, Mail, MessageCircle, GraduationCap, Layers, Router } from 'lucide-react'
 
-export default function FinalCTA() {
+export default function FinalCTA({ onOpenContact }: { onOpenContact?: () => void }) {
+  const router = useRouter()
   return (
     <section className="relative py-28 px-4 sm:px-6 lg:px-8 bg-[#0B0B0F] overflow-hidden">
       <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[120px]" />
@@ -35,7 +37,9 @@ export default function FinalCTA() {
               Live sessions with people currently building at scale — real
               guidance, not recycled slides.
             </p>
-            <button className="group mt-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-primary text-[#0B0B0F] hover:text-white rounded-full h-12 px-7 font-semibold text-sm transition-colors">
+            <button 
+            onClick={() => {router.push('/courses')}}
+            className="group mt-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-primary text-[#0B0B0F] hover:text-white rounded-full h-12 px-7 font-semibold text-sm transition-colors">
               Book a class
               <ArrowRight
                 size={15}
@@ -55,7 +59,9 @@ export default function FinalCTA() {
               From custom software to research publishing — see everything
               TechGajana can build with you.
             </p>
-            <button className="group mt-auto inline-flex items-center justify-center gap-2 border border-white/20 hover:border-white/40 text-white hover:bg-white/5 rounded-full h-12 px-7 font-semibold text-sm transition-colors">
+            <button 
+            onClick={() => {router.push('/services')}}
+            className="group mt-auto inline-flex items-center justify-center gap-2 border border-white/20 hover:border-white/40 text-white hover:bg-white/5 rounded-full h-12 px-7 font-semibold text-sm transition-colors">
               Explore services
               <ArrowRight
                 size={15}
@@ -67,20 +73,20 @@ export default function FinalCTA() {
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8 border-t border-white/10 text-sm text-white/40">
           <a
-            href="mailto:hello@techgajana.com"
+            href="mailto:info@techgajana.org"
             className="inline-flex items-center gap-2 hover:text-white/70 transition-colors"
           >
             <Mail size={15} />
-            hello@techgajana.com
+            info@techgajana.org
           </a>
           <span className="hidden sm:block w-1 h-1 rounded-full bg-white/20" />
-          <a
-            href="#"
+          <button
+            onClick={onOpenContact}
             className="inline-flex items-center gap-2 hover:text-white/70 transition-colors"
           >
             <MessageCircle size={15} />
             Chat with support
-          </a>
+          </button>
         </div>
       </div>
     </section>

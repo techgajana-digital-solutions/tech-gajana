@@ -163,7 +163,7 @@ function StackedBookCard({ article, index, totalCards }: { article: Article; ind
             </div>
 
             <a
-              href="#"
+              href="/articles"
               className="w-12 h-12 rounded-full bg-gray-900 text-white flex items-center justify-center hover:bg-indigo-600 hover:scale-110 transition-all shadow-lg"
               aria-label="Read article"
             >
@@ -213,7 +213,7 @@ export default function Articles() {
         {/* Footer Link */}
         <div className="text-center mt-12 relative z-50">
           <a
-            href="#"
+            href="/articles"
             className="inline-flex items-center gap-3 bg-white/90 backdrop-blur-md border border-gray-200 text-gray-900 hover:text-indigo-600 hover:border-indigo-200 transition-all font-bold text-lg px-8 py-4 rounded-full shadow-md hover:shadow-lg"
           >
             Explore the Articles <ArrowRight size={20} />

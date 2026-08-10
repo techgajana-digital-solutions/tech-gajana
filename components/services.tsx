@@ -9,6 +9,7 @@ interface Slide {
   title: string
   description: string
   image: string
+  href: string
 }
 
 const slides: Slide[] = [
@@ -18,6 +19,7 @@ const slides: Slide[] = [
     description:
       'Custom solutions built with a modern tech stack — from web apps to complex platforms, engineered for performance and built to scale with your product.',
     image: 'https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    href: '/services',
   },
   {
     number: '02',
@@ -25,6 +27,7 @@ const slides: Slide[] = [
     description:
       'Real-time guidance from industry experts, paired with structured courses to help you learn faster and build with confidence.',
     image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    href: '/courses',
   },
   {
     number: '03',
@@ -32,6 +35,7 @@ const slides: Slide[] = [
     description:
       'Premium tools and resources for developers — curated products that save you time and help you ship better software.',
     image: 'https://plus.unsplash.com/premium_photo-1683288662057-2ac296955d32?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    href: '/store',
   },
   {
     number: '04',
@@ -39,6 +43,7 @@ const slides: Slide[] = [
     description:
       'Publish and share your technical research with a community of builders, from drafting to peer review to release.',
     image: 'https://plus.unsplash.com/premium_photo-1681681061615-623d024005ff?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    href: '/articles',
   },
 ]
 
@@ -90,15 +95,15 @@ export default function Service() {
                     {slide.description}
                   </p>
                   <a
-  href="#"
-  className="group inline-flex items-center gap-2 bg-gray-900 hover:bg-[#4F46E5] text-white hover:text-black px-6 py-2 rounded-sm transition-colors duration-150 text-sm font-medium"
->
-  Explore
-  <ArrowUpRight
-    size={16}
-    className="text-white group-hover:text-black transition-transform duration-300 group-hover:rotate-45"
-  />
-</a>
+                    href={slide.href}
+                    className="group inline-flex items-center gap-2 bg-gray-900 hover:bg-[#4F46E5] text-white hover:text-black px-6 py-2 rounded-sm transition-colors duration-150 text-sm font-medium"
+                  >
+                    Explore
+                    <ArrowUpRight
+                      size={16}
+                      className="text-white group-hover:text-black transition-transform duration-300 group-hover:rotate-45"
+                    />
+                  </a>
                 </div>
 
                 <div

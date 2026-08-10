@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 
@@ -9,6 +10,7 @@ interface Slide {
   headline: string
   buttonText: string
   image: string
+  href: string
 }
 
 const slides: Slide[] = [
@@ -18,6 +20,7 @@ const slides: Slide[] = [
     buttonText: 'Read',
     image:
       'https://plus.unsplash.com/premium_vector-1682311028452-0220af078701?q=80&w=793&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    href: '/portfolio',
   },
   {
     category: 'Mobile Learning App',
@@ -25,6 +28,7 @@ const slides: Slide[] = [
     buttonText: 'Read',
     image:
       'https://plus.unsplash.com/premium_photo-1722209813892-147158a0d4ec?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    href: '/portfolio',
   },
   {
     category: 'Analytics Dashboard',
@@ -32,6 +36,7 @@ const slides: Slide[] = [
     buttonText: 'Read',
     image:
       'https://plus.unsplash.com/premium_photo-1683980578016-a1f980719ec2?q=80&w=435&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    href: '/portfolio',
   },
   {
     category: 'Digital Marketing',
@@ -39,10 +44,13 @@ const slides: Slide[] = [
     buttonText: 'Read',
     image:
       'https://plus.unsplash.com/premium_photo-1683872921964-25348002a392?q=80&w=435&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    href: '/portfolio',
   },
 ]
 
 export default function Portfolio() {
+  const router = useRouter()
+  
   const containerRef = useRef<HTMLDivElement>(null)
   
   // Dynamically calculate the cube size based on screen width
@@ -109,7 +117,9 @@ export default function Portfolio() {
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-[1.1] mb-6 sm:mb-8">
                       {slide.headline}
                     </h2>
-                    <button className="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white text-sm font-bold uppercase tracking-wide px-6 py-3 sm:px-8 sm:py-4 rounded-full transition-transform hover:scale-105">
+                    <button 
+                    onClick={() => {router.push(slide.href)}}
+                    className="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white text-sm font-bold uppercase tracking-wide px-6 py-3 sm:px-8 sm:py-4 rounded-full transition-transform hover:scale-105">
                       {slide.buttonText}
                       <ArrowUpRight size={18} strokeWidth={2.5} />
                     </button>

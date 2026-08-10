@@ -6,8 +6,8 @@ import { Menu, X } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
 const navLinks = [
-  { label: 'Courses', href: '/courses' },
   { label: 'Portfolio', href: '/portfolio' },
+  // { label: 'Courses', href: '/courses' },
   // { label: 'Store', href: '/store' },
   // { label: 'Articles', href: '/articles' },
   // { label: 'Events', href: '/events' },
@@ -18,7 +18,7 @@ export default function Navbar() {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-[100vw]">
+    <nav className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-[80vw]">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -55,7 +55,7 @@ export default function Navbar() {
         </div>
 
         {/* Right actions */}
-        <div className="hidden md:flex items-center gap-3 flex-shrink-0">
+        {/* <div className="hidden md:flex items-center gap-3 flex-shrink-0">
           <a
             href="/login"
             className="text-sm font-medium text-slate-400 hover:text-primary transition-colors"
@@ -68,7 +68,7 @@ export default function Navbar() {
           >
             Sign Up
           </a>
-        </div>
+        </div> */}
 
         {/* Mobile toggle */}
         <button
@@ -96,7 +96,7 @@ export default function Navbar() {
               {link.label}
             </a>
           ))}
-          <div className="pt-3 mt-3 border-t border-white/10 space-y-2 px-4">
+          {/* <div className="pt-3 mt-3 border-t border-white/10 space-y-2 px-4">
             <a href="/login" className="block text-sm text-slate-400 hover:text-white">
               Login
             </a>
@@ -106,7 +106,7 @@ export default function Navbar() {
             >
               Sign Up
             </a>
-          </div>
+          </div> */}
         </motion.div>
       )}
     </nav>
