@@ -65,13 +65,12 @@ export default function Portfolio() {
     offset: ['start start', 'end end'],
   })
   // For 4 slides: movePercent = (4 - 1) * (100 / 4) = 75%
-  const movePercent = (slides.length - 1) * (100 / slides.length)
-
+ 
   // Text slides horizontally on ALL devices now
   const trackX = useTransform(
     scrollYProgress,
     [0, 1],
-   ['0%', `-${movePercent}%`]
+  ['0%', `-${(slides.length - 1) * 100}%`]
   )
 
   // Cube rotates on ALL devices now
