@@ -35,7 +35,7 @@ export default function Home() {
       <TrustBar />
       <Services />
       <Portfolio />
-      <Mentors onOpenContact={() => setIsContactModalOpen(true)} />
+      {/* <Mentors onOpenContact={() => setIsContactModalOpen(true)} /> */}
       <Testimonials />
       <Articles />
       <EventsBanner />

@@ -16,26 +16,26 @@ const testimonials: Testimonial[] = [
   {
     id: 1,
     quote:
-      'They didn\u2019t just build what we asked for \u2014 they questioned the brief, pushed back where it mattered, and shipped something better than what we thought we wanted.',
-    authorName: 'Sarah Chen',
-    authorRole: 'VP of Product',
-    company: 'Northwind Labs',
+      'I asked them to create an app... They did a great job in a short period of time... Also they do corrections in the technical glitches which happen whenever I ask them... Perfect people for software solutions is techgajana...',
+    authorName: 'Janarthanan',
+    authorRole: 'Professor',
+    company: 'AVMC',
   },
   {
     id: 2,
     quote:
-      'The mentorship program changed how our junior engineers think about system design. Six months in, they\u2019re reviewing senior PRs with real confidence.',
-    authorName: 'Marcus Reid',
-    authorRole: 'Engineering Director',
-    company: 'Fieldstone',
+      'The team at TechGajana Private Limited is exceptional! They delivered our project on time and within budget. Their attention to detail and commitment to quality is unmatched.',
+    authorName: 'Vignesh V',
+    authorRole: 'Franchise Owner of Ice Bay',
+    company: 'Ice Bay',
   },
   {
     id: 3,
     quote:
       'Rare to find a team that\u2019s equally comfortable in a whiteboard session and a production incident at 2am. Both happened. Both went well.',
-    authorName: 'Priya Nathan',
-    authorRole: 'Co-founder & CTO',
-    company: 'Loom & Co.',
+    authorName: 'Anburaja',
+    authorRole: 'Founder & CEO of Ouiya',
+    company: 'Ouiya',
   },
 ]
 
