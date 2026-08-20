@@ -2,6 +2,8 @@ import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { GoogleAnalytics } from '@next/third-parties/google';
+import Clarity from '@microsoft/clarity';
+import { useEffect } from 'react';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.techgajana.org'), 
@@ -88,6 +90,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+
+  const clarity_project_id = "y56ixbquyr";
+
+  useEffect(() => {
+    Clarity.init(clarity_project_id);
+  }, []);
+
   return (
     <html lang="en" className="bg-background">
       <head>
