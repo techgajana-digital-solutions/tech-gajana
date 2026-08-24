@@ -178,7 +178,8 @@ function StackedBookCard({ article, index, totalCards }: { article: Article; ind
 
 export default function Articles() {
   return (
-    <section id="articles" className="relative py-32 px-4 sm:px-6 lg:px-8 bg-[#F8F9FA]">
+    // Added overflow-x-clip to contain the 3D page-turning cards
+    <section id="articles" className="relative py-32 px-4 sm:px-6 lg:px-8 bg-[#F8F9FA] overflow-x-clip">
       
       {/* Ambient Background Blobs for Backdrop Blur effect */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-200/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob pointer-events-none" />
