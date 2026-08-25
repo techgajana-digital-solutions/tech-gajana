@@ -73,7 +73,7 @@ export default function Navbar() {
         {/* Mobile toggle */}
         <button
           onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className="md:hidden text-white flex-shrink-0"
+          className="md:hidden text-accent flex-shrink-100 p-2 rounded-full hover:bg-white/5 transition-colors"
         >
           {isMobileOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
@@ -91,7 +91,7 @@ export default function Navbar() {
               key={link.label}
               href={link.href}
               onClick={() => setIsMobileOpen(false)}
-              className="block px-4 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
+              className="block px-4 py-2.5 text-sm font-medium text-accent hover:text-white hover:bg-white/5 rounded-2xl transition-colors"
             >
               {link.label}
             </a>

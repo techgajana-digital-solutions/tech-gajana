@@ -149,11 +149,13 @@ function ProjectCard({
   index,
   onOpenContact,
   containerClass,
+  imageAspectClass,
 }: {
   project: Project
   index: number
   onOpenContact: () => void
   containerClass?: string
+  imageAspectClass?: string
 }) {
   return (
     <motion.div
@@ -163,7 +165,11 @@ function ProjectCard({
       transition={{ duration: 0.8, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
       className={`group flex flex-col gap-4 sm:gap-6 cursor-pointer ${containerClass ?? project.className}`}
     >
-      <div className="relative w-full overflow-hidden bg-transparent aspect-[4/3] sm:aspect-[3/2] md:aspect-auto">
+      <div
+        className={`relative w-full overflow-hidden bg-transparent md:aspect-auto ${
+          imageAspectClass ?? 'aspect-[4/3] sm:aspect-[3/2]'
+        }`}
+      >
         <motion.img
           src={project.image}
           alt={project.title || 'Project image'}
@@ -254,21 +260,23 @@ export default function PortfolioPage() {
                 // group pairs for mobile: indices 5+6, 7+8, 10+11
                 if (i === 5 || i === 7 || i === 10) {
                   rows.push(
-                    <div key={`group-${i}`} className="flex min-w-0 gap-3 sm:gap-4 md:contents justify-start">
-                      <div className={`${projects[i].className} w-[38%] sm:w-[32%] md:w-auto`}>
+                    <div key={`group-${i}`} className="flex min-w-0 gap-4 sm:gap-6 md:contents justify-center">
+                      <div className={`${projects[i].className} w-[48%] sm:w-[45%] md:w-auto`}>
                         <ProjectCard
                           project={projects[i]}
                           index={i}
                           onOpenContact={() => setIsContactModalOpen(true)}
                           containerClass="w-full"
+                          imageAspectClass="aspect-[9/16] sm:aspect-[3/2]"
                         />
                       </div>
-                      <div className={`${projects[i + 1].className} w-[38%] sm:w-[32%] md:w-auto`}>
+                      <div className={`${projects[i + 1].className} w-[48%] sm:w-[45%] md:w-auto`}>
                         <ProjectCard
                           project={projects[i + 1]}
                           index={i + 1}
                           onOpenContact={() => setIsContactModalOpen(true)}
                           containerClass="w-full"
+                          imageAspectClass="aspect-[9/16] sm:aspect-[3/2]"
                         />
                       </div>
                     </div>
