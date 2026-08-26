@@ -92,7 +92,7 @@ export default function Portfolio() {
     // 1. Added overflow-x-clip and w-full to prevent body expansion
     <div ref={containerRef} className="relative bg-[#f4f4f4] h-[400vh] overflow-x-clip w-full">
       
-      // 2. Added [clip-path:inset(0)] to strictly enforce clipping of 3D children on iOS
+      {/* 2. Added [clip-path:inset(0)] to strictly enforce clipping of 3D children on iOS */}
       <div className="sticky top-0 h-[100dvh] w-full overflow-hidden [clip-path:inset(0)]">
         <div className="relative h-full w-full flex flex-col lg:flex-row items-center">
           
