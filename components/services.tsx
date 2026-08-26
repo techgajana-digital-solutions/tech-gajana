@@ -15,9 +15,9 @@ interface Slide {
 const slides: Slide[] = [
   {
     number: '01',
-    title: 'Software Development',
+    title: 'Digital Transformation Services',
     description:
-      'Custom solutions built with a modern tech stack — from web apps to complex platforms, engineered for performance and built to scale with your product.',
+      'Empowering businesses with cutting-edge technology solutions, from web and mobile apps to cloud infrastructure and AI integration.',
     image: 'https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     href: '/services',
   },
