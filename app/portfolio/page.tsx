@@ -10,44 +10,52 @@ import ContactModal from '@/components/contact-modal'
 interface Project {
   title: string
   description: string
-  image: string
+  image?: string
   className: string
   url: string
+  image2?: string
 }
 
 const projects: Project[] = [
   {
     title: 'ADN Adventures',
     description: 'A travel and adventure website developed with an engaging interface to showcase destinations,services and customer experiences.',
-    image: '/adn.png',
+    image2: '/adn.png',
     className: 'col-span-1 md:col-span-12 mb-12 md:mb-32',
     url: 'https://adnadventures.com/',
   },
   {
     title: 'Hotel Neidhal',
     description: 'Customized billing and business management software solutions.',
-    image: '/neidhal.png',
+    image2: '/neidhal.png',
     className: 'col-span-1 md:col-span-5 md:mt-24',
     url: '#',
   },
   {
-    title: 'ICE BAY',
-    description: 'A cutting-edge ice cream manufacturing and distribution solution.',
-    image: '/icebay.png',
-    className: 'col-span-1 md:col-span-6 md:col-start-7',
+    title: 'Battery Car',
+    description: 'Billing and business management software solutions.',
+    image: '/kid.png',
+    className: 'col-span-1 md:col-span-2 md:col-start-8 mt-12 md:mt-10',
+    url: '#',
+  },
+  {
+    title: '',
+    description: '',
+    image: '/kid2.png',
+    className: 'col-span-1 md:col-span-2 md:col-start-10 mt-12 md:mt-24',
     url: '#',
   },
   {
     title: 'Metaport Shipping',
     description: 'Premium shipping solutions connecting continents with precision and reliability.',
-    image: '/metaport.png',
+    image2: '/metaport.png',
     className: 'col-span-1 md:col-span-10 md:col-start-2 mt-12 md:mt-32',
     url: 'https://metaportshipping.org/',
   },
   {
     title: 'Barq Printings',
     description: 'Creative business website developed for printing services.',
-    image: '/printers.png',
+    image2: '/printers.png',
     className: 'col-span-1 md:col-span-6',
     url: 'https://barqprintings.com/',
   },
@@ -66,23 +74,16 @@ const projects: Project[] = [
     url: '#',
   },
   {
-    title: 'Battery Car',
-    description: 'Billing and business management software solutions.',
-    image: '/kid.png',
-    className: 'col-span-1 md:col-span-2 md:col-start-2 mt-12 md:mt-10',
-    url: '#',
-  },
-  {
-    title: '',
-    description: '',
-    image: '/kid2.png',
-    className: 'col-span-1 md:col-span-2 md:col-start-4 mt-12 md:mt-24',
+    title: 'ICE BAY',
+    description: 'A cutting-edge ice cream manufacturing and distribution solution.',
+    image2: '/icebay.png',
+    className: 'col-span-1 md:col-span-6 md:col-start-1 ',
     url: '#',
   },
   {
     title: 'EuroZiel',
     description: 'Creative business website developed for Education consultancy.',
-    image: '/Euroziel.png',
+    image2: '/Euroziel.png',
     className: 'col-span-1 md:col-span-6',
     url: 'https://www.euroziel.com/#/',
   },
@@ -90,14 +91,14 @@ const projects: Project[] = [
     title: 'Hotel Billing',
     description: '',
     image: '/hotel.png',
-    className: 'col-span-1 md:col-span-2 md:col-start-7 mt-12 md:mt-24',
+    className: 'col-span-1 md:col-span-2 md:col-start-5 mt-12 md:mt-24',
     url: '#',
   },
   {
     title: '',
     description: 'Billing and business management software solutions.',
     image: '/hotel2.png',
-    className: 'col-span-1 md:col-span-2 md:col-start-9 mt-12 md:mt-24',
+    className: 'col-span-1 md:col-span-2 md:col-start-7 mt-12 md:mt-24',
     url: '#',
   },
 ]
@@ -166,14 +167,36 @@ function ProjectCard({
       className={`group flex flex-col gap-4 sm:gap-6 cursor-pointer ${containerClass ?? project.className}`}
     >
       <div
-        className={`relative w-full overflow-hidden bg-transparent md:aspect-auto ${
+        className={`relative w-full rounded-[25px] overflow-hidden  bg-transparent md:aspect-auto ${
           imageAspectClass ?? 'aspect-[4/3] sm:aspect-[3/2]'
         }`}
       >
-        <motion.img
-          src={project.image}
-          alt={project.title || 'Project image'}
-          onClick={() => {
+        {project.image && (
+          <motion.img
+            src={project.image}
+            alt={project.title || 'Project image'}
+            onClick={() => {
+              if (typeof window !== 'undefined') {
+                const isMobile = window.matchMedia('(max-width: 767px)').matches
+                if (!isMobile) return
+
+                if (project.url === '#') {
+                  onOpenContact()
+                } else if (project.url && project.url.startsWith('http')) {
+                  window.open(project.url, '_blank', 'noopener noreferrer')
+                } else if (project.url) {
+                  window.location.href = project.url
+                }
+              }
+            }}
+            className="w-full h-full object-contain  transition-transform duration-[1.5s] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-105 rounded-[25px] cursor-pointer"
+          />
+        )}
+        {project.image2 && (
+          <motion.img
+            src={project.image2}
+            alt={project.title || 'Project image'}
+            onClick={() => {
             if (typeof window !== 'undefined') {
               const isMobile = window.matchMedia('(max-width: 767px)').matches
               if (!isMobile) return
@@ -186,9 +209,10 @@ function ProjectCard({
                 window.location.href = project.url
               }
             }
-          }}
-          className="w-full h-full object-contain transition-transform duration-[1.5s] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-105 cursor-pointer"
+            }}
+          className="w-full h-full object-contain border border-black/10 border-2 transition-transform duration-[1.5s] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-105 rounded-[25px] cursor-pointer"
         />
+        )}
 
         {/* Action button — always visible on mobile (no hover available on touch),
             fades in on hover only from md breakpoint up */}
@@ -257,8 +281,8 @@ export default function PortfolioPage() {
             {(() => {
               const rows: React.JSX.Element[] = []
               for (let i = 0; i < projects.length; i++) {
-                // group pairs for mobile: indices 5+6, 7+8, 10+11
-                if (i === 5 || i === 7 || i === 10) {
+                // group pairs for mobile: indices 2+3, 6+7, 10+11
+                if (i === 2 || i === 6 || i === 10) {
                   rows.push(
                     <div key={`group-${i}`} className="flex min-w-0 gap-4 sm:gap-6 md:contents justify-center">
                       <div className={`${projects[i].className} w-[48%] sm:w-[45%] md:w-auto`}>

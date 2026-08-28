@@ -1,12 +1,13 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
 const navLinks = [
   { label: 'Portfolio', href: '/portfolio' },
+  { label: 'Our Services', href: '/services' },
   // { label: 'Courses', href: '/courses' },
   // { label: 'Store', href: '/store' },
   // { label: 'Articles', href: '/articles' },
@@ -16,6 +17,8 @@ const navLinks = [
 export default function Navbar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [isOverDarkSection, setIsOverDarkSection] = useState(false)
+  const [isVisible, setIsVisible] = useState(true)
+  const lastScrollY = useRef(0)
   const navRef = useRef<HTMLElement>(null)
   const pathname = usePathname()
 
@@ -32,17 +35,19 @@ export default function Navbar() {
 
       if (!mediaQuery.matches) return
 
-      const navBounds = nav.getBoundingClientRect()
+           const navBounds = nav.getBoundingClientRect()
+      const topInset = Math.max(0, navBounds.top)
       const bottomInset = Math.max(0, window.innerHeight - navBounds.bottom)
       observer = new IntersectionObserver(
         (entries) => {
           setIsOverDarkSection(entries.some((entry) => entry.isIntersecting))
         },
         {
-          rootMargin: `-${navBounds.top}px 0px -${bottomInset}px 0px`,
+          rootMargin: `-${topInset}px 0px -${bottomInset}px 0px`,
           threshold: 0,
         }
       )
+      
 
       document
         .querySelectorAll<HTMLElement>('[data-navbar-theme="dark"]')
@@ -60,8 +65,38 @@ export default function Navbar() {
     }
   }, [])
 
+  useEffect(() => {
+    lastScrollY.current = window.scrollY
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+
+      // Always show near the top of the page
+      if (currentScrollY < 80) {
+        setIsVisible(true)
+      } else if (currentScrollY > lastScrollY.current) {
+        // Scrolling down
+        setIsVisible(false)
+        setIsMobileOpen(false)
+      } else if (currentScrollY < lastScrollY.current) {
+        // Scrolling up
+        setIsVisible(true)
+      }
+
+      lastScrollY.current = currentScrollY
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   return (
-    <nav ref={navRef} className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-[80vw]">
+    <motion.nav
+      ref={navRef}
+      animate={{ y: isVisible ? 0 : -100, opacity: isVisible ? 1 : 0 }}
+      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-[80vw]"
+    >
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -92,7 +127,7 @@ export default function Navbar() {
                 className={`px-4 py-2 text-sm font-medium transition-colors rounded-full ${
                   isActive
                     ? "text-white bg-primary"
-                    : "text-slate-800 hover:bg-accent"
+                    : "text-slate-500 hover:bg-accent"
                 }`}
               >
                 {link.label}
@@ -103,13 +138,13 @@ export default function Navbar() {
 
         {/* Right actions */}
         {/* <div className="hidden md:flex items-center gap-3 flex-shrink-0">
-          <a
+          
             href="/login"
             className="text-sm font-medium text-slate-400 hover:text-primary transition-colors"
           >
             Login
           </a>
-          <a
+          
             href="/signup"
             className="inline-flex items-center gap-1.5 bg-primary hover:bg-accent text-white text-sm font-semibold px-5 py-2 rounded-full transition-colors"
           >
@@ -157,7 +192,7 @@ export default function Navbar() {
             <a href="/login" className="block text-sm text-slate-400 hover:text-white">
               Login
             </a>
-            <a
+            
               href="/signup"
               className="block text-center bg-white text-slate-950 text-sm font-semibold py-2.5 rounded-full"
             >
@@ -166,6 +201,6 @@ export default function Navbar() {
           </div> */}
         </motion.div>
       )}
-    </nav>
+    </motion.nav>
   )
 }

@@ -16,7 +16,7 @@ interface MouseState {
   active: boolean;
 }
 
-const PARTICLE_COUNT = 2500;
+const PARTICLE_COUNT = 600;
 const PARTICLE_RADIUS = 8;
 const GRAVITY = 0.35;
 const FLOOR_FRICTION = 0.82;
