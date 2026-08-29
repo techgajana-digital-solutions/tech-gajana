@@ -8,6 +8,7 @@ interface Particle {
   vx: number;
   vy: number;
   r: number;
+  color: string;
 }
 
 interface MouseState {
@@ -16,7 +17,7 @@ interface MouseState {
   active: boolean;
 }
 
-const PARTICLE_COUNT = 600;
+const PARTICLE_COUNT = 800;
 const PARTICLE_RADIUS = 8;
 const GRAVITY = 0.35;
 const FLOOR_FRICTION = 0.82;
@@ -30,6 +31,15 @@ const MAX_TOTAL_PARTICLES = 4000;
 const SPAWN_COUNT = 40;
 const SPAWN_SPEED_MIN = 2;
 const SPAWN_SPEED_MAX = 6;
+
+// Mixed particle palette — white, yellow, blue
+const PARTICLE_COLORS = [
+  "rgba(255,255,255,0.85)", // white
+  "#f5d082",  // yellow
+];
+
+const randomColor = () =>
+  PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)];
 
 const Footer: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -67,6 +77,7 @@ const Footer: React.FC = () => {
         vx: 0,
         vy: 0,
         r: PARTICLE_RADIUS,
+        color: randomColor(),
       });
     }
     particlesRef.current = particles;
@@ -122,6 +133,7 @@ const Footer: React.FC = () => {
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
         r: PARTICLE_RADIUS,
+        color: randomColor(),
       });
     }
   }, []);
@@ -208,17 +220,34 @@ const Footer: React.FC = () => {
       }
     }
 
+    // Render — grouped by color, since a single fill() call can only
+    // paint one fillStyle at a time. Bucketing avoids one draw call
+    // per particle (which would be far slower at high particle counts).
     const ctx = ctxRef.current;
     if (ctx) {
       ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = "rgba(255,255,255,0.85)";
-      ctx.beginPath();
+
+      const byColor = new Map<string, Particle[]>();
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
-        ctx.moveTo(p.x + p.r, p.y);
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        const bucket = byColor.get(p.color);
+        if (bucket) {
+          bucket.push(p);
+        } else {
+          byColor.set(p.color, [p]);
+        }
       }
-      ctx.fill();
+
+      byColor.forEach((group, color) => {
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        for (let i = 0; i < group.length; i++) {
+          const p = group[i];
+          ctx.moveTo(p.x + p.r, p.y);
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        }
+        ctx.fill();
+      });
     }
 
     rafRef.current = requestAnimationFrame(step);
