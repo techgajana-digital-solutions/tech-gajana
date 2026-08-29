@@ -34,7 +34,7 @@ const SPAWN_SPEED_MAX = 6;
 
 // Mixed particle palette — white, yellow, blue
 const PARTICLE_COLORS = [
-  "rgba(255,255,255,0.85)", // white
+  "rgb(255, 255, 255)", // white
   "#f5d082",  // yellow
 ];
 
