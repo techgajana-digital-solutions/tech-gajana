@@ -184,7 +184,7 @@ export default function ServicesPage() {
       <main className="bg-[#0a0a0a] text-white selection:bg-[#f5d082] selection:text-black" ref={heroRef}>
 
        {/* 1. HUGE INC STYLE BRUTALIST HERO */}
-        <section className="relative w-full h-[100px] flex flex-col justify-center overflow-hidden pt-32 pb-20 px-4 sm:px-6 lg:px-12 border-b border-white/10">
+        <section className="relative w-full h-[750px] flex flex-col justify-center overflow-hidden pt-32 pb-20 px-4 sm:px-6 lg:px-12 border-b border-white/10">
           {/* Ambient Glow */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[800px] max-h-[800px] bg-[#f5d082]/10 rounded-full blur-[150px] pointer-events-none" />
           
