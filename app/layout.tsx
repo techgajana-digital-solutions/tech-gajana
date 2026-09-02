@@ -13,7 +13,12 @@ export const metadata: Metadata = {
   },
   description:
     'TechGajana delivers professional software development, live mentorship courses, an e-commerce tech store, and research publishing for students and builders looking to grow their skills and ship real products.',
-  keywords: [
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/apple-icon.png',
+  },
+    keywords: [
     'TechGajana Pvt. Ltd.',
     'TechGajana Private Limited',
     'TechGajana',
