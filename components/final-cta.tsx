@@ -6,7 +6,7 @@ import { ArrowRight, Mail, MessageCircle, GraduationCap, Layers, Router } from '
 export default function FinalCTA({ onOpenContact }: { onOpenContact?: () => void }) {
   const router = useRouter()
   return (
-    <section className="relative py-28 px-4 sm:px-6 lg:px-8 bg-[#0B0B0F] overflow-hidden">
+    <section data-navbar-theme="dark" className="relative py-28 px-4 sm:px-6 lg:px-8 bg-[#0B0B0F] overflow-hidden">
       <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[120px]" />
       <div className="pointer-events-none absolute -bottom-24 -right-24 w-80 h-80 bg-accent/10 rounded-full blur-3xl" />
 

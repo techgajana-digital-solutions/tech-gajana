@@ -89,14 +89,11 @@ export default function Portfolio() {
   )
 
   return (
-    
-    // 1. Removed lg: from h-[400vh] so the scroll space exists on mobile
-    <div ref={containerRef} className="relative bg-[#f4f4f4] h-[400vh]">
+    // 1. Added overflow-x-clip and w-full to prevent body expansion
+    <div ref={containerRef} className="relative bg-[#f4f4f4] h-[400vh] overflow-x-clip w-full">
       
-      {/* 2. Removed lg: from sticky, top-0, and h-screen */}
-      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden">
-        
-        {/* 3. Removed lg: from flex-row alignment, so it stacks neatly on mobile */}
+      {/* 2. Added [clip-path:inset(0)] to strictly enforce clipping of 3D children on iOS */}
+      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden [clip-path:inset(0)]">
         <div className="relative h-full w-full flex flex-col lg:flex-row items-center">
           
           {/* Text Section: Top 50% on mobile, Left 55% on desktop */}

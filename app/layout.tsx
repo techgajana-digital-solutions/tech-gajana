@@ -99,8 +99,14 @@ export default function RootLayout({
       <head>
         <meta name="apple-mobile-web-app-title" content="TechGajana" />
       </head>
+      {/* 1. Removed overflow from body */}
       <body className="antialiased bg-background text-foreground">
-        {children}
+        
+        {/* 2. Added this strict wrapper div around children */}
+        <div className="relative flex flex-col min-h-screen w-full max-w-[100vw] overflow-x-clip">
+          {children}
+        </div>
+
         <AnalyticsProvider />
         {process.env.NODE_ENV === 'production' && <Analytics />}
         <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID!} />
