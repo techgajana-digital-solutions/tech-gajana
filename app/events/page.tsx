@@ -40,6 +40,7 @@ import CountdownWidget from '@/components/events/CountdownWidget'
 import AddToCalendarButton from '@/components/events/AddToCalendarButton'
 import OpinionForm from '@/components/events/OpinionForm'
 import { REGISTRATION_APPSCRIPT_URL } from '@/components/events/RegistrationForm'
+import RiseLabFooter from '@/components/events/riselabfooter'
 
 // ---------------------------------------------------------------------------
 // Fonts / tokens
@@ -861,7 +862,7 @@ export default function EventsListingPage() {
 
       <OpinionModal isOpen={isOpinionModalOpen} onClose={() => setIsOpinionModalOpen(false)} />
 
-      <Footer />
+      <RiseLabFooter />
     </>
   )
 }
