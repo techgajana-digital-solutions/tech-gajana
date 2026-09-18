@@ -39,8 +39,8 @@ import StatusBadge from '@/components/events/StatusBadge'
 import CountdownWidget from '@/components/events/CountdownWidget'
 import AddToCalendarButton from '@/components/events/AddToCalendarButton'
 import OpinionForm from '@/components/events/OpinionForm'
-import { REGISTRATION_APPSCRIPT_URL } from '@/components/events/RegistrationForm'
 import RiseLabFooter from '@/components/events/riselabfooter'
+import { submitRegistration } from '@/lib/eventsRegistration'
 
 // ---------------------------------------------------------------------------
 // Fonts / tokens
@@ -280,26 +280,22 @@ function QuickRegisterForm() {
     setIsSubmitting(true)
 
     const form = e.currentTarget
-    const payload = {
+    const eventSlug = (form.elements.namedItem('event') as HTMLSelectElement).value
+    const eventTitle = events.find((ev) => ev.slug === eventSlug)?.title
+
+    const result = await submitRegistration({
+      event: eventSlug,
+      eventTitle,
       name: (form.elements.namedItem('name') as HTMLInputElement).value,
       phone: (form.elements.namedItem('phone') as HTMLInputElement).value,
-      event: (form.elements.namedItem('event') as HTMLSelectElement).value,
-    }
+      source: 'events-listing-quick-register',
+    })
 
-    try {
-      // Same AppScript endpoint as the full registration form on each event's
-      // details page — this is just a lighter-weight entry point.
-      await fetch(REGISTRATION_APPSCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      })
+    setIsSubmitting(false)
+    if (result.success) {
       setIsSuccess(true)
-    } catch {
-      setError('Something went wrong. Please try again in a moment.')
-    } finally {
-      setIsSubmitting(false)
+    } else {
+      setError(result.message ?? 'Something went wrong. Please try again.')
     }
   }
 
@@ -404,7 +400,7 @@ export default function EventsListingPage() {
   const nextEvent = getNextUpcomingEvent()
   const galleryRef = useRef<HTMLDivElement>(null)
 
-   // PLACEHOLDER — sample recap photos to preview the design; swap these for
+  // PLACEHOLDER — sample recap photos to preview the design; swap these for
   // real event photography (or wire to a CMS query) once the first bootcamp
   // wraps, per the spec's "empty until first event concludes" rule.
   const pastEvents: { title: string; recap: string; image: string }[] = [
