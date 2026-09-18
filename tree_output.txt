@@ -1,0 +1,82 @@
+.
+├── app
+│   ├── apple-icon.png
+│   ├── articles
+│   │   ├── page copy.tsx
+│   │   └── page.tsx
+│   ├── courses
+│   │   ├── page copy.tsx
+│   │   └── page.tsx
+│   ├── events
+│   │   ├── page copy.tsx
+│   │   └── page.tsx
+│   ├── favicon.ico
+│   ├── globals.css
+│   ├── icon0.svg
+│   ├── icon1.png
+│   ├── layout.tsx
+│   ├── manifest.json
+│   ├── page.tsx
+│   ├── portfolio
+│   │   └── page.tsx
+│   └── store
+│       ├── page copy.tsx
+│       └── page.tsx
+├── components
+│   ├── AnalyticsProvider.tsx
+│   ├── animation.tsx
+│   ├── articles.tsx
+│   ├── contact-modal.tsx
+│   ├── events-banner.tsx
+│   ├── final-cta.tsx
+│   ├── footer.tsx
+│   ├── hero.tsx
+│   ├── intro-video.tsx
+│   ├── mentors.tsx
+│   ├── navbar.tsx
+│   ├── portfolio.tsx
+│   ├── services.tsx
+│   ├── testimonials.tsx
+│   ├── trust-bar.tsx
+│   ├── ui
+│   │   └── button.tsx
+│   └── under-maintenance.tsx
+├── components.json
+├── lib
+│   └── utils.ts
+├── next-env.d.ts
+├── next-sitemap.config.ts
+├── next.config.mjs
+├── open-next.config.ts
+├── out.txt
+├── package-lock.json
+├── package.json
+├── postcss.config.mjs
+├── public
+│   ├── Euroziel.png
+│   ├── adn.png
+│   ├── apple-icon.png
+│   ├── cycle.png
+│   ├── cycle2.png
+│   ├── hotel.png
+│   ├── hotel2.png
+│   ├── icebay.png
+│   ├── intro.mp4
+│   ├── kid.png
+│   ├── kid2.png
+│   ├── metaport.png
+│   ├── neidhal.png
+│   ├── printers.png
+│   ├── readme
+│   ├── robots.txt
+│   ├── sitemap-0.xml
+│   ├── sitemap.xml
+│   ├── tg.png
+│   ├── web-app-manifest-192x192.png
+│   ├── web-app-manifest-512x512.png
+│   └── wirl.jpeg
+├── tree_output.txt
+├── tsconfig.json
+└── wrangler.jsonc
+
+11 directories, 69 files

@@ -12,7 +12,7 @@ const navLinks = [
   // { label: 'Courses', href: '/courses' },
   // { label: 'Store', href: '/store' },
   // { label: 'Articles', href: '/articles' },
-  // { label: 'Events', href: '/events' },
+  { label: 'Events', href: '/events' },
 ]
 
 export default function Navbar() {
