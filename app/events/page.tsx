@@ -621,10 +621,9 @@ export default function EventsListingPage() {
         {/* --------------------------------------------------------------- */}
         {/* 3. TG TALK ABOUT — visually distinct, online-only series */}
         {/* --------------------------------------------------------------- */}
-        <section id="tg-talk" className="py-20 px-6 lg:px-12" style={{ backgroundColor: PLUM_TINT }}>
+        {/* <section id="tg-talk" className="py-20 px-6 lg:px-12" style={{ backgroundColor: PLUM_TINT }}>
           <div className="max-w-[1200px] mx-auto">
             <div className="grid lg:grid-cols-2 gap-10 items-start">
-              {/* left: intro */}
               <div>
                 <span
                   className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full mb-5"
@@ -689,7 +688,6 @@ export default function EventsListingPage() {
                 </div>
               </div>
 
-              {/* right: this week's topic + past episodes placeholder */}
               <div className="space-y-6">
                 <div className="rounded-[1.5rem] p-7 bg-white">
                   <div className="flex items-center gap-2 mb-3">
@@ -698,7 +696,6 @@ export default function EventsListingPage() {
                       THIS WEEK&apos;S TOPIC
                     </p>
                   </div>
-                  {/* PLACEHOLDER — editable by content team weekly */}
                   <p className="text-lg sm:text-xl font-bold leading-snug" style={{ color: INK }}>{THIS_WEEKS_TOPIC}</p>
                 </div>
 
@@ -706,7 +703,6 @@ export default function EventsListingPage() {
                   <p className="text-xs font-bold tracking-wide mb-5" style={{ color: INK_SOFT }}>
                     PAST EPISODES
                   </p>
-                  {/* PLACEHOLDER — grid pulls from YouTube playlist/API */}
                   <div className="grid grid-cols-3 gap-3">
                     {[1, 2, 3].map((n) => (
                       <div
@@ -725,9 +721,9 @@ export default function EventsListingPage() {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
 
-               {/* --------------------------------------------------------------- */}
+        {/* --------------------------------------------------------------- */}
         {/* 4. MOMENTS FROM OUR PAST EVENTS */}
         {/* --------------------------------------------------------------- */}
         <section className="py-16 sm:py-20 px-6 lg:px-12">
