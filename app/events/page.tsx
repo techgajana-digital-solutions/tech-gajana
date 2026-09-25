@@ -288,7 +288,7 @@ function QuickRegisterForm() {
       eventTitle,
       name: (form.elements.namedItem('name') as HTMLInputElement).value,
       phone: (form.elements.namedItem('phone') as HTMLInputElement).value,
-      source: 'events-listing-quick-register',
+      source: 'events-page-quick-register-form',
     })
 
     setIsSubmitting(false)

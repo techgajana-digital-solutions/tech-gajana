@@ -13,7 +13,7 @@ import { User, Mail, Phone, Building, ArrowRight, Check } from 'lucide-react'
 // Exported so other entry points (e.g. the "Ready to Join" quick form on
 // the events listing page) can post to the same endpoint.
 // ---------------------------------------------------------------------------
-export const REGISTRATION_APPSCRIPT_URL = 'https://script.google.com/macros/s/PLACEHOLDER_REGISTRATION_ENDPOINT/exec'
+export const REGISTRATION_APPSCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxoij7EzfnlK1HCR1pR-ZdQOgkjpkJYqeOHTlJ_RwQpyre1WcYmEe8RkUZYZG8MiEA1/exec'
 
 const PLUM = '#704A74'
 const PLUM_DARK = '#3B1F40'
@@ -76,6 +76,7 @@ export default function RegistrationForm({
       phone: (form.elements.namedItem('phone') as HTMLInputElement).value,
       college: (form.elements.namedItem('college') as HTMLInputElement).value,
       event: eventSlug,
+      source: 'event-details-registration-form',
     }
 
     try {
