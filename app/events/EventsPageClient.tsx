@@ -183,7 +183,7 @@ function BootcampCard({ event, index }: { event: EventData; index: number }) {
 // Event schedule timeline node
 // ---------------------------------------------------------------------------
 function TimelineNode({ event }: { event: EventData }) {
-  const theme = CARD_THEME[event.slug]
+  const theme = getEventTheme(event)
   return (
     <Link href={`/events/${event.slug}`} className="flex flex-col items-center flex-shrink-0 cursor-pointer group">
       <div
