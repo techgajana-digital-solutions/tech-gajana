@@ -177,15 +177,18 @@ export function getAllSlugs(events: EventData[]): string[] {
   return events.map((e) => e.slug)
 }
 
-const REGISTRATION_WINDOW_DAYS = 30 // fallback only, used when sheet doesn't set explicit dates
+const REGISTRATION_WINDOW_DAYS = 30 // fallback only, used when sheet has no explicit open date
 
-export function computeStatus(event: EventData, now: Date = new Date()): EventStatus {
+export function computeStatus(
+  event: Pick<EventData, 'startDate' | 'endDate' | 'registrationOpenDate' | 'registrationCloseDate'>,
+  now: Date = new Date()
+): EventStatus {
   const end = new Date(`${event.endDate}T23:59:59`)
   if (now > end) return 'Completed'
 
   if (event.registrationCloseDate) {
     const closeDate = new Date(`${event.registrationCloseDate}T23:59:59`)
-    if (now > closeDate) return 'Completed' // or a distinct 'Registration Closed' status if you want to tell these apart
+    if (now > closeDate) return 'Completed'
   }
 
   const openDate = event.registrationOpenDate
@@ -195,12 +198,15 @@ export function computeStatus(event: EventData, now: Date = new Date()): EventSt
   return now >= openDate ? 'Open for Registration' : 'Coming Soon'
 }
 
-export function getRegistrationUrgency(event: EventData, now: Date = new Date()): { daysLeft: number; isUrgent: boolean } | null {
+export function getRegistrationUrgency(
+  event: Pick<EventData, 'registrationCloseDate'>,
+  now: Date = new Date()
+): { daysLeft: number; isUrgent: boolean } | null {
   if (!event.registrationCloseDate) return null
   const closeDate = new Date(`${event.registrationCloseDate}T23:59:59`)
   const daysLeft = Math.ceil((closeDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
   if (daysLeft < 0) return null
-  return { daysLeft, isUrgent: daysLeft <= 5 } // tweak the 5-day threshold to taste
+  return { daysLeft, isUrgent: daysLeft <= 5 }
 }
 
 export function getNextUpcomingEvent(events: EventData[], now: Date = new Date()): EventData | undefined {

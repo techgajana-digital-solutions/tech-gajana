@@ -145,7 +145,13 @@ function BootcampCard({ event, index }: { event: EventData; index: number }) {
         <div className="px-5 pt-5 flex flex-col flex-1">
           <div className="flex items-center gap-2 mb-3">
             <ModeBadge mode={event.mode} />
-            <StatusBadge startDate={event.startDate} endDate={event.endDate} size="sm" />
+            <StatusBadge
+              startDate={event.startDate}
+              endDate={event.endDate}
+              registrationOpenDate={event.registrationOpenDate}
+              registrationCloseDate={event.registrationCloseDate}
+              size="sm"
+            />
           </div>
 
           <h3 className="text-base font-bold mb-2 leading-snug" style={{ color: INK }}>

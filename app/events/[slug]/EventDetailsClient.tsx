@@ -112,7 +112,12 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                                 {event.tag}
                             </span>
                             <ModeBadge mode={event.mode} />
-                            <StatusBadge startDate={event.startDate} endDate={event.endDate} />
+                            <StatusBadge
+                                startDate={event.startDate}
+                                endDate={event.endDate}
+                                registrationOpenDate={event.registrationOpenDate}
+                                registrationCloseDate={event.registrationCloseDate}
+                            />
                             <AddToCalendarButton
                                 title={event.title}
                                 description={event.description}
@@ -148,6 +153,9 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                                 Register Now <ArrowRight size={16} />
                             </button>
                             <CountdownWidget targetDate={event.startDate} label="Starts in" variant="dark" />
+                            {event.registrationCloseDate && (
+                                <CountdownWidget targetDate={event.registrationCloseDate} label="Registration closes in" variant="dark" />
+                            )}
                         </div>
                     </div>
                 </section>
