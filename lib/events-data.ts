@@ -115,211 +115,54 @@ const defaultSchedule = (day1Date: string, day2Date: string): ScheduleDay[] => [
 // Events — titles, dates, and descriptions below are FINAL COPY from the
 // content team. Do not reword, shorten, or change dates/titles.
 // ---------------------------------------------------------------------------
-export const events: EventData[] = [
-  {
-    slug: 'flutter-bootcamp',
-    tag: 'Bootcamp 01',
-    title: 'Cross Platform / Mobile App Development with Flutter',
-    dateRange: 'September 26–27',
-    startDate: '2026-09-26',
-    endDate: '2026-09-27',
-    durationBadge: '2 Days',
-    mode: 'Offline',
-    description:
-      'Build beautiful, native-feeling apps for Android and iOS from a single codebase. Hands-on sessions covering Flutter fundamentals, UI design, and real app deployment.',
-    heroImage:
-      'https://images.unsplash.com/photo-1551650975-87deedd944c3?q=80&w=1600&auto=format&fit=crop', // PLACEHOLDER
-    whatYoullLearn: [
-      'Flutter fundamentals and project structure', // PLACEHOLDER
-      'Building real UI with widgets and layouts', // PLACEHOLDER
-      'Connecting your app to a live API', // PLACEHOLDER
-      'State management basics', // PLACEHOLDER
-      'Building and exporting an installable app', // PLACEHOLDER
-    ],
-    whoShouldAttend: 'Students and beginners with basic programming knowledge', // PLACEHOLDER
-    toolToInstall: 'Flutter SDK + Android Studio', // PLACEHOLDER
-    refreshments: 'Provided', // PLACEHOLDER
-    venue: 'TechGajana Riselab', // PLACEHOLDER
-    address: 'Address to be confirmed', // PLACEHOLDER
-    mapsLink: 'https://maps.app.goo.gl/FqA9QsbUGQHKs5nTA',
-    timing: '9:00 AM – 5:00 PM (both days)',
-    seatsLeft: null, // PLACEHOLDER
-    registrationDeadline: null, // PLACEHOLDER
-    fee: 'Free', // PLACEHOLDER
-    faqs: [
-      { q: 'Do I need prior coding experience?', a: 'Basic programming knowledge helps, but the bootcamp starts from fundamentals.' }, // PLACEHOLDER
-      { q: 'What do I need to bring?', a: 'A laptop that can run Flutter, and a charger.' }, // PLACEHOLDER
-      { q: 'Will I get a certificate?', a: 'Yes, on completion of both days.' }, // PLACEHOLDER
-    ],
-    schedule: defaultSchedule('September 26', 'September 27'),
-  },
-  {
-    slug: 'nextjs-bootcamp',
-    tag: 'Bootcamp 02',
-    title: 'Full Stack Development with Next.js',
-    dateRange: 'October 17–18',
-    startDate: '2026-10-17',
-    endDate: '2026-10-18',
-    durationBadge: '2 Days',
-    mode: 'Offline',
-    description:
-      'Go from frontend to backend with Next.js. Learn routing, server-side rendering, APIs, and how to ship a complete full stack web application.',
-    heroImage:
-      'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1600&auto=format&fit=crop', // PLACEHOLDER
-    whatYoullLearn: [
-      'Next.js routing, layouts, and server components', // PLACEHOLDER
-      'Server-side rendering and data fetching', // PLACEHOLDER
-      'Building and consuming APIs', // PLACEHOLDER
-      'Working with a real database', // PLACEHOLDER
-      'Deploying a full stack app', // PLACEHOLDER
-    ],
-    whoShouldAttend: 'Students with basic HTML/CSS/JS knowledge', // PLACEHOLDER
-    toolToInstall: 'Node.js + VS Code', // PLACEHOLDER
-    refreshments: 'Provided', // PLACEHOLDER
-    venue: 'TechGajana Riselab', // PLACEHOLDER
-    address: 'Address to be confirmed', // PLACEHOLDER
-    mapsLink: 'https://maps.app.goo.gl/FqA9QsbUGQHKs5nTA',
-    timing: '9:00 AM – 5:00 PM (both days)',
-    seatsLeft: null, // PLACEHOLDER
-    registrationDeadline: null, // PLACEHOLDER
-    fee: 'Free', // PLACEHOLDER
-    faqs: [
-      { q: 'Do I need prior coding experience?', a: 'Basic web development knowledge is recommended.' }, // PLACEHOLDER
-      { q: 'What do I need to bring?', a: 'A laptop with Node.js installable, and a charger.' }, // PLACEHOLDER
-      { q: 'Will I get a certificate?', a: 'Yes, on completion of both days.' }, // PLACEHOLDER
-    ],
-    schedule: defaultSchedule('October 17', 'October 18'),
-  },
-  {
-    slug: 'unity-gamedev-bootcamp',
-    tag: 'Bootcamp 03',
-    title: 'Game Development with Unity',
-    dateRange: 'November 7–8',
-    startDate: '2026-11-07',
-    endDate: '2026-11-08',
-    durationBadge: '2 Days',
-    mode: 'Offline',
-    description:
-      'Dive into game development with Unity. Design mechanics, build interactive worlds, and create your own playable game by the end of the bootcamp.',
-    heroImage:
-      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1600&auto=format&fit=crop', // PLACEHOLDER
-    whatYoullLearn: [
-      'Unity editor basics: scenes, prefabs, physics', // PLACEHOLDER
-      'Player movement and game logic in C#', // PLACEHOLDER
-      'Level design fundamentals', // PLACEHOLDER
-      'Exporting a playable build', // PLACEHOLDER
-    ],
-    whoShouldAttend: 'Students curious about game development, no prior Unity experience needed', // PLACEHOLDER
-    toolToInstall: 'Unity Hub + Unity Editor', // PLACEHOLDER
-    refreshments: 'Provided', // PLACEHOLDER
-    venue: 'TechGajana Riselab', // PLACEHOLDER
-    address: 'Address to be confirmed', // PLACEHOLDER
-    mapsLink: 'https://maps.app.goo.gl/FqA9QsbUGQHKs5nTA',
-    timing: '9:00 AM – 5:00 PM (both days)',
-    seatsLeft: null, // PLACEHOLDER
-    registrationDeadline: null, // PLACEHOLDER
-    fee: 'Free', // PLACEHOLDER
-    faqs: [
-      { q: 'Do I need prior game dev experience?', a: 'No, this bootcamp starts from the basics.' }, // PLACEHOLDER
-      { q: 'What do I need to bring?', a: 'A laptop that can run Unity, and a charger.' }, // PLACEHOLDER
-      { q: 'Will I get a certificate?', a: 'Yes, on completion of both days.' }, // PLACEHOLDER
-    ],
-    schedule: defaultSchedule('November 7', 'November 8'),
-  },
-  {
-    slug: 'java-for-all',
-    tag: 'Bootcamp 04',
-    title: 'Java for All',
-    dateRange: 'November 18–19',
-    startDate: '2026-11-18',
-    endDate: '2026-11-19',
-    durationBadge: '2 Days',
-    mode: 'Offline',
-    description:
-      'A beginner-friendly deep dive into Java — covering core concepts, OOP principles, and practical coding exercises for developers at any stage.',
-    heroImage:
-      'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1600&auto=format&fit=crop', // PLACEHOLDER
-    whatYoullLearn: [
-      'Core Java syntax and fundamentals', // PLACEHOLDER
-      'Object-oriented programming principles', // PLACEHOLDER
-      'Practical coding exercises', // PLACEHOLDER
-      'Writing clean, maintainable code', // PLACEHOLDER
-    ],
-    whoShouldAttend: 'Developers at any stage — beginners to intermediate', // PLACEHOLDER
-    toolToInstall: 'JDK + IntelliJ IDEA / Eclipse', // PLACEHOLDER
-    refreshments: 'Provided', // PLACEHOLDER
-    venue: 'TechGajana Riselab', // PLACEHOLDER
-    address: 'Address to be confirmed', // PLACEHOLDER
-    mapsLink: 'https://maps.app.goo.gl/FqA9QsbUGQHKs5nTA',
-    timing: '9:00 AM – 5:00 PM (both days)',
-    seatsLeft: null, // PLACEHOLDER
-    registrationDeadline: null, // PLACEHOLDER
-    fee: 'Free', // PLACEHOLDER
-    faqs: [
-      { q: 'Is this suitable for complete beginners?', a: 'Yes, the bootcamp is designed to be beginner-friendly.' }, // PLACEHOLDER
-      { q: 'What do I need to bring?', a: 'A laptop with JDK installable, and a charger.' }, // PLACEHOLDER
-      { q: 'Will I get a certificate?', a: 'Yes, on completion of both days.' }, // PLACEHOLDER
-    ],
-    schedule: defaultSchedule('November 18', 'November 19'),
-  },
-  {
-    slug: 'dsa-and-me',
-    tag: 'Bootcamp 05',
-    title: 'POV: One Day, DSA and Me <3',
-    dateRange: 'December 9–10',
-    startDate: '2026-12-09',
-    endDate: '2026-12-10',
-    durationBadge: '2 Days',
-    mode: 'Offline',
-    description:
-      'Sharpen your problem-solving skills with focused sessions on Data Structures and Algorithms — built for placements, contests, and real coding confidence.',
-    heroImage:
-      'https://images.unsplash.com/photo-1509228468518-180dd4864904?q=80&w=1600&auto=format&fit=crop', // PLACEHOLDER
-    whatYoullLearn: [
-      'Arrays, strings, trees, and graphs', // PLACEHOLDER
-      'Pattern recognition for interview questions', // PLACEHOLDER
-      'Time and space complexity', // PLACEHOLDER
-      'Live problem solving practice', // PLACEHOLDER
-    ],
-    whoShouldAttend: 'Students preparing for placements or competitive programming', // PLACEHOLDER
-    toolToInstall: 'Any code editor (VS Code recommended)', // PLACEHOLDER
-    refreshments: 'Provided', // PLACEHOLDER
-    venue: 'TechGajana Riselab', // PLACEHOLDER
-    address: 'Address to be confirmed', // PLACEHOLDER
-    mapsLink: 'https://maps.app.goo.gl/FqA9QsbUGQHKs5nTA',
-    timing: '9:00 AM – 5:00 PM (both days)',
-    seatsLeft: null, // PLACEHOLDER
-    registrationDeadline: null, // PLACEHOLDER
-    fee: 'Free', // PLACEHOLDER
-    faqs: [
-      { q: 'What level of DSA knowledge is needed?', a: 'Basic programming knowledge is enough — we build up from there.' }, // PLACEHOLDER
-      { q: 'What do I need to bring?', a: 'A laptop with any code editor, and a charger.' }, // PLACEHOLDER
-      { q: 'Will I get a certificate?', a: 'Yes, on completion of both days.' }, // PLACEHOLDER
-    ],
-    schedule: defaultSchedule('December 9', 'December 10'),
-  },
-]
+export async function getEvents(): Promise<EventData[]> {
+  const EVENTS_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbyR0eRtFiIZjmM4kEQfnhpFODimKANQx-q6SGjNeLZnEYNl0ulPm6ce0AG-UpydPbiU/exec'
+  
+  const res = await fetch(EVENTS_SHEET_API_URL!, {
+    next: { revalidate: 300 }, // refetch at most every 5 minutes
+  })
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-export function getEventBySlug(slug: string): EventData | undefined {
+  if (!res.ok) {
+    throw new Error(`Failed to fetch events: ${res.status}`)
+  }
+
+  const rows = await res.json()
+
+  return rows.map((r: any): EventData => ({
+    slug: r.slug,
+    tag: r.tag,
+    title: r.title,
+    dateRange: r.dateRange,
+    startDate: r.startDate,
+    endDate: r.endDate,
+    durationBadge: r.durationBadge,
+    mode: r.mode,
+    description: r.description,
+    heroImage: r.heroImage,
+    whatYoullLearn: r.whatYoullLearn,
+    whoShouldAttend: r.whoShouldAttend,
+    toolToInstall: r.toolToInstall,
+    refreshments: r.refreshments,
+    venue: r.venue,
+    address: r.address,
+    mapsLink: r.mapsLink,
+    timing: r.timing,
+    seatsLeft: r.seatsLeft,
+    registrationDeadline: r.registrationDeadline,
+    fee: r.fee,
+    faqs: r.faqs,
+    schedule: defaultSchedule(r.startDate, r.endDate),
+  }))
+}
+
+export function getEventBySlug(events: EventData[], slug: string): EventData | undefined {
   return events.find((e) => e.slug === slug)
 }
 
-export function getAllSlugs(): string[] {
+export function getAllSlugs(events: EventData[]): string[] {
   return events.map((e) => e.slug)
 }
 
-/**
- * Status badge must update dynamically based on date vs today's date.
- * Call this client-side (after mount) to avoid SSR/client date mismatch.
- *
- * Assumption (spec doesn't pin an exact rule): registration is considered
- * "Open" starting 30 days before the event and through its final day;
- * anything further out shows "Coming Soon". Adjust REGISTRATION_WINDOW_DAYS
- * below, or wire this to a real "registration opens" field from the CMS.
- */
 const REGISTRATION_WINDOW_DAYS = 30
 
 export function computeStatus(startDate: string, endDate: string, now: Date = new Date()): EventStatus {
@@ -332,11 +175,7 @@ export function computeStatus(startDate: string, endDate: string, now: Date = ne
   return 'Coming Soon'
 }
 
-/**
- * Returns the single nearest upcoming (not yet completed) event.
- * The countdown widget only ever shows for this one event.
- */
-export function getNextUpcomingEvent(now: Date = new Date()): EventData | undefined {
+export function getNextUpcomingEvent(events: EventData[], now: Date = new Date()): EventData | undefined {
   const upcoming = events
     .filter((e) => new Date(`${e.endDate}T23:59:59`) >= now)
     .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
