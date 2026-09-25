@@ -71,6 +71,13 @@ export interface EventData {
   /** PLACEHOLDER — 3-5 common questions, content team to add */
   faqs: FaqItem[]
   schedule: ScheduleDay[]
+  registrationOpenDate: string | null
+  registrationCloseDate: string | null
+  iconKey: string
+  colorFrom: string
+  colorTo: string
+  accentColor: string
+  accentDarkColor: string
 }
 
 // ---------------------------------------------------------------------------
@@ -117,7 +124,7 @@ const defaultSchedule = (day1Date: string, day2Date: string): ScheduleDay[] => [
 // ---------------------------------------------------------------------------
 export async function getEvents(): Promise<EventData[]> {
   const EVENTS_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbyR0eRtFiIZjmM4kEQfnhpFODimKANQx-q6SGjNeLZnEYNl0ulPm6ce0AG-UpydPbiU/exec'
-  
+
   const res = await fetch(EVENTS_SHEET_API_URL!, {
     next: { revalidate: 300 }, // refetch at most every 5 minutes
   })
@@ -152,6 +159,13 @@ export async function getEvents(): Promise<EventData[]> {
     fee: r.fee,
     faqs: r.faqs,
     schedule: defaultSchedule(r.startDate, r.endDate),
+    registrationOpenDate: r.registrationOpenDate || null,
+    registrationCloseDate: r.registrationCloseDate || null,
+    iconKey: r.iconKey || 'sparkles',
+    colorFrom: r.colorFrom || '#F4EEF5',
+    colorTo: r.colorTo || '#EAD3EF',
+    accentColor: r.accentColor || '#704A74',
+    accentDarkColor: r.accentDarkColor || '#3B1F40',
   }))
 }
 
@@ -163,16 +177,30 @@ export function getAllSlugs(events: EventData[]): string[] {
   return events.map((e) => e.slug)
 }
 
-const REGISTRATION_WINDOW_DAYS = 30
+const REGISTRATION_WINDOW_DAYS = 30 // fallback only, used when sheet doesn't set explicit dates
 
-export function computeStatus(startDate: string, endDate: string, now: Date = new Date()): EventStatus {
-  const start = new Date(`${startDate}T00:00:00`)
-  const end = new Date(`${endDate}T23:59:59`)
-  const registrationOpensAt = new Date(start.getTime() - REGISTRATION_WINDOW_DAYS * 24 * 60 * 60 * 1000)
-
+export function computeStatus(event: EventData, now: Date = new Date()): EventStatus {
+  const end = new Date(`${event.endDate}T23:59:59`)
   if (now > end) return 'Completed'
-  if (now >= registrationOpensAt) return 'Open for Registration'
-  return 'Coming Soon'
+
+  if (event.registrationCloseDate) {
+    const closeDate = new Date(`${event.registrationCloseDate}T23:59:59`)
+    if (now > closeDate) return 'Completed' // or a distinct 'Registration Closed' status if you want to tell these apart
+  }
+
+  const openDate = event.registrationOpenDate
+    ? new Date(`${event.registrationOpenDate}T00:00:00`)
+    : new Date(new Date(`${event.startDate}T00:00:00`).getTime() - REGISTRATION_WINDOW_DAYS * 24 * 60 * 60 * 1000)
+
+  return now >= openDate ? 'Open for Registration' : 'Coming Soon'
+}
+
+export function getRegistrationUrgency(event: EventData, now: Date = new Date()): { daysLeft: number; isUrgent: boolean } | null {
+  if (!event.registrationCloseDate) return null
+  const closeDate = new Date(`${event.registrationCloseDate}T23:59:59`)
+  const daysLeft = Math.ceil((closeDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+  if (daysLeft < 0) return null
+  return { daysLeft, isUrgent: daysLeft <= 5 } // tweak the 5-day threshold to taste
 }
 
 export function getNextUpcomingEvent(events: EventData[], now: Date = new Date()): EventData | undefined {

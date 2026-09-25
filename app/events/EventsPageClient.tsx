@@ -67,37 +67,24 @@ const JOIN_BANNER_IMAGE =
 // lib/events-data.ts on purpose so the data file stays pure content/CMS
 // data and this file owns how it's visually represented.
 // ---------------------------------------------------------------------------
-const CARD_THEME: Record<string, { icon: React.ReactNode; panelBg: string; accent: string; accentDark: string }> = {
-  'flutter-bootcamp': {
-    icon: <Smartphone size={36} />,
-    panelBg: 'linear-gradient(135deg, #F3E4F6, #EAD3EF)',
-    accent: '#9C4FA8',
-    accentDark: '#6B2E75',
-  },
-  'nextjs-bootcamp': {
-    icon: <Code2 size={36} />,
-    panelBg: 'linear-gradient(135deg, #E3EEFA, #D2E3F5)',
-    accent: '#2E6FB0',
-    accentDark: '#1F3A5F',
-  },
-  'unity-gamedev-bootcamp': {
-    icon: <Gamepad2 size={36} />,
-    panelBg: 'linear-gradient(135deg, #FBEBDD, #F7DDC4)',
-    accent: '#C1701F',
-    accentDark: '#8A4A11',
-  },
-  'java-for-all': {
-    icon: <Coffee size={36} />,
-    panelBg: 'linear-gradient(135deg, #E1F3EC, #CDEBDE)',
-    accent: '#268A63',
-    accentDark: '#0F5C42',
-  },
-  'dsa-and-me': {
-    icon: <Brain size={36} />,
-    panelBg: 'linear-gradient(135deg, #EFE6F5, #E3D3ED)',
-    accent: '#704A74',
-    accentDark: '#3B1F40',
-  },
+
+const ICON_MAP: Record<string, React.ComponentType<{ size?: number }>> = {
+  smartphone: Smartphone,
+  code2: Code2,
+  gamepad2: Gamepad2,
+  coffee: Coffee,
+  brain: Brain,
+  sparkles: Sparkles, // fallback default
+}
+
+function getEventTheme(event: EventData) {
+  const IconComponent = ICON_MAP[event.iconKey] ?? Sparkles
+  return {
+    icon: <IconComponent size={36} />,
+    panelBg: `linear-gradient(135deg, ${event.colorFrom}, ${event.colorTo})`,
+    accent: event.accentColor,
+    accentDark: event.accentDarkColor,
+  }
 }
 
 function shortDate(iso: string) {
@@ -128,7 +115,7 @@ function ModeBadge({ mode }: { mode: 'Offline' | 'Online' }) {
 // Pastel bootcamp card
 // ---------------------------------------------------------------------------
 function BootcampCard({ event, index }: { event: EventData; index: number }) {
-  const theme = CARD_THEME[event.slug]
+  const theme = getEventTheme(event)
 
   return (
     <motion.div
@@ -403,6 +390,11 @@ export default function EventsPageClient({
   const [isOpinionModalOpen, setIsOpinionModalOpen] = useState(false)
   const galleryRef = useRef<HTMLDivElement>(null)
 
+  const allSameDuration = events.length > 0 && events.every(e => e.durationBadge === events[0].durationBadge)
+  const durationLabel = events.length === 0 ? '' : allSameDuration ? events[0].durationBadge.toLowerCase() : 'multi-day'
+  const allOffline = events.length > 0 && events.every(e => e.mode === 'Offline')
+  const earliestEvent = [...events].sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())[0]
+
   // PLACEHOLDER — sample recap photos to preview the design; swap these for
   // real event photography (or wire to a CMS query) once the first bootcamp
   // wraps, per the spec's "empty until first event concludes" rule.
@@ -448,7 +440,10 @@ export default function EventsPageClient({
               </p>
 
               <div className="flex flex-wrap gap-6 mb-9">
-                <StatItem icon={<Calendar size={18} />} label={<>{events.length} Bootcamps<br /><span className="text-xs font-normal" style={{ color: INK_SOFT }}>2 days each</span></>} />
+                <StatItem
+                  icon={<Calendar size={18} />}
+                  label={<>{events.length} Bootcamps<br /><span className="text-xs font-normal" style={{ color: INK_SOFT }}>{durationLabel} each</span></>}
+                />
                 <StatItem icon={<MapPin size={18} />} label={<>Offline Sessions<br /><span className="text-xs font-normal" style={{ color: INK_SOFT }}>TechGajana Riselab</span></>} />
                 <StatItem icon={<Mic size={18} />} label={<>TG Talk About<br /><span className="text-xs font-normal" style={{ color: INK_SOFT }}>Online, weekly</span></>} />
               </div>
@@ -524,7 +519,7 @@ export default function EventsPageClient({
                 </p>
               </div>
               <p className={`${caveat.className} text-2xl`} style={{ color: PLUM }}>
-                {events.length} Bootcamps ✓ All Offline ✓ Beginner Friendly
+                {events.length} Bootcamps {allOffline && '✓ All Offline'} ✓ Beginner Friendly
               </p>
             </div>
 
@@ -552,9 +547,9 @@ export default function EventsPageClient({
               </p>
 
               <div className="rounded-2xl p-5 space-y-3 mb-6" style={{ backgroundColor: '#ffffff10' }}>
-                <ScheduleRow label="Starting from" value={shortDate(events[0].startDate)} />
-                <ScheduleRow label="Duration" value="2 Days each" />
-                <ScheduleRow label="Mode" value="Offline" />
+                <ScheduleRow label="Starting from" value={shortDate(earliestEvent.startDate)} />
+                <ScheduleRow label="Duration" value={`${durationLabel} each`} />
+                <ScheduleRow label="Mode" value={allOffline ? 'Offline' : 'Mixed'} />
               </div>
 
               <a
