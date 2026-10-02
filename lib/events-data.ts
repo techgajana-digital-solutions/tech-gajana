@@ -1,34 +1,29 @@
-// ---------------------------------------------------------------------------
-// TechGajana — Events data source
-//
-// This is the SINGLE source of truth for all 5 bootcamp events. The event
-// details template at /events/[slug]/page.tsx reads from this file for every
-// event — there are no separate hardcoded pages per event.
-//
-// Swap this file for a CMS/API call later (e.g. `await fetch(CMS_URL)`)
-// without touching the page components — every page reads through the
-// getEvent* helpers below, not this array directly.
-//
-// Fields commented "PLACEHOLDER" are flagged in the spec as content-team-owned
-// and should become CMS-editable fields before launch.
-// ---------------------------------------------------------------------------
+// lib/events-data.ts
+// Single source of truth: the Google Sheet. Everything below normalises
+// whatever the sheet contains so bad or blank cells never crash the site.
 
-export type EventMode = 'Offline' | 'Online'
-export type EventStatus = 'Open for Registration' | 'Coming Soon' | 'Completed'
+export type EventMode = 'Offline' | 'Online' | 'Hybrid'
+export type EventStatus =
+  | 'Coming Soon'
+  | 'Open for Registration'
+  | 'Registration Closed'
+  | 'Full'
+  | 'Ongoing'
+  | 'Completed'
+  | 'Cancelled'
+export type StatusOverride = 'auto' | 'upcoming' | 'ongoing' | 'completed' | 'cancelled'
 
 export interface ScheduleSession {
   time: string
-  session: string // PLACEHOLDER — session-level breakdown, content team to add
-  speaker?: string // PLACEHOLDER — speaker name if applicable
+  session: string
+  speaker?: string
 }
-
 export interface ScheduleDay {
   day: string
   date: string
   hours: string
   sessions: ScheduleSession[]
 }
-
 export interface FaqItem {
   q: string
   a: string
@@ -39,40 +34,38 @@ export interface EventData {
   tag: string
   title: string
   dateRange: string
-  /** ISO date, used for status + countdown calculations */
+  /** YYYY-MM-DD, or the raw text (e.g. "TBA") when not a real date */
   startDate: string
-  /** ISO date, used for status calculations */
   endDate: string
   durationBadge: string
   mode: EventMode
   description: string
-  /** PLACEHOLDER — hero banner image per event, content team to supply final art */
   heroImage: string
-  /** PLACEHOLDER — 4-6 bullets, content team to fill based on final curriculum */
   whatYoullLearn: string[]
-  /** PLACEHOLDER — varies per event */
   whoShouldAttend: string
-  /** PLACEHOLDER — software/tool to pre-install, varies per event */
   toolToInstall: string
-  /** PLACEHOLDER — provided / not provided */
   refreshments: string
-  /** PLACEHOLDER — venue name, content team to confirm */
   venue: string
-  /** PLACEHOLDER — full address text */
   address: string
   mapsLink: string
   timing: string
-  /** PLACEHOLDER — dynamic counter, manually updated or synced from Sheet row count */
   seatsLeft: number | null
-  /** PLACEHOLDER */
+  /** Free text shown to users, e.g. "30 Nov 2026" or "will be announced soon" */
   registrationDeadline: string | null
-  /** PLACEHOLDER — Free / Paid amount */
+  /** Display string: "Free" or "₹499" */
   fee: string
-  /** PLACEHOLDER — 3-5 common questions, content team to add */
+  isFree: boolean
   faqs: FaqItem[]
   schedule: ScheduleDay[]
+  /** YYYY-MM-DD or null (never free text) */
   registrationOpenDate: string | null
   registrationCloseDate: string | null
+  registrationOpen: boolean | null
+  registrationLink: string | null
+  statusOverride: StatusOverride
+  /** Computed from sheet values at fetch time */
+  status: EventStatus
+  order: number
   iconKey: string
   colorFrom: string
   colorTo: string
@@ -80,11 +73,6 @@ export interface EventData {
   accentDarkColor: string
 }
 
-// ---------------------------------------------------------------------------
-// Standard "things to know" checklist items — reused across all 5 events.
-// Only the tool-to-install and refreshments lines vary per event (pulled
-// from each event's own data above).
-// ---------------------------------------------------------------------------
 export const standardChecklist = [
   'Bring your own laptop (charger included)',
   'Valid college/government ID for entry',
@@ -93,125 +81,259 @@ export const standardChecklist = [
   'Certificate of participation provided on completion',
 ]
 
-const defaultSchedule = (day1Date: string, day2Date: string): ScheduleDay[] => [
+// ---------------------------------------------------------------------------
+// Small normalisers
+// ---------------------------------------------------------------------------
+const str = (v: unknown): string => (v == null ? '' : String(v).trim())
+
+const toIso = (v: unknown): string | null => {
+  const m = str(v).match(/^\d{4}-\d{2}-\d{2}/)
+  return m ? m[0] : null
+}
+
+const toNum = (v: unknown): number | null => {
+  const s = str(v)
+  if (s === '') return null
+  const n = Number(s)
+  return Number.isFinite(n) ? n : null
+}
+
+const toTriBool = (v: unknown): boolean | null => {
+  if (typeof v === 'boolean') return v
+  const s = str(v).toLowerCase()
+  if (['true', 'yes', 'y', '1'].includes(s)) return true
+  if (['false', 'no', 'n', '0'].includes(s)) return false
+  return null
+}
+
+const toLines = (v: unknown): string[] =>
+  Array.isArray(v)
+    ? v.map(str).filter(Boolean)
+    : str(v).split(/\r?\n/).map((l) => l.trim()).filter(Boolean)
+
+function toMode(v: unknown): EventMode {
+  const s = str(v).toLowerCase()
+  if (s.includes('hybrid') || (s.includes('offline') && s.includes('online'))) return 'Hybrid'
+  return s.includes('online') ? 'Online' : 'Offline'
+}
+
+function toOverride(v: unknown): StatusOverride {
+  const s = str(v).toLowerCase()
+  return (['upcoming', 'ongoing', 'completed', 'cancelled'] as const).find((x) => x === s) ?? 'auto'
+}
+
+function formatFee(v: unknown): { fee: string; isFree: boolean } {
+  const s = str(v)
+  if (!s || /^(free|0|nil|-)$/i.test(s)) return { fee: 'Free', isFree: true }
+  if (/^\d+(\.\d+)?$/.test(s)) return { fee: `₹${Number(s).toLocaleString('en-IN')}`, isFree: false }
+  return { fee: s, isFree: false }
+}
+
+function parseFaqs(v: unknown): FaqItem[] {
+  if (Array.isArray(v)) {
+    return v
+      .map((f: any) => ({ q: str(f?.q), a: str(f?.a) }))
+      .filter((f) => f.q && f.a)
+  }
+  return toLines(v)
+    .map((line) => {
+      const [q, ...rest] = line.split('||')
+      return { q: str(q), a: str(rest.join('||')) }
+    })
+    .filter((f) => f.q && f.a)
+}
+
+/** True only when the event has a real, parseable start date */
+export function hasValidDate(event: Pick<EventData, 'startDate'>): boolean {
+  return toIso(event.startDate) !== null
+}
+
+// ---------------------------------------------------------------------------
+// Schedule
+// ---------------------------------------------------------------------------
+function dayLabel(startIso: string | null, offset: number): string {
+  if (!startIso) return 'TBA'
+  const d = new Date(`${startIso}T00:00:00`)
+  d.setDate(d.getDate() + offset)
+  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
+}
+
+const defaultSchedule = (startIso: string | null, hours: string): ScheduleDay[] => [
   {
     day: 'Day 1',
-    date: day1Date,
-    hours: '9:00 AM – 5:00 PM',
+    date: dayLabel(startIso, 0),
+    hours,
     sessions: [
-      { time: '9:00 AM', session: 'Check-in & Welcome' }, // PLACEHOLDER
-      { time: '9:30 AM', session: 'Session 1 (details TBA)' }, // PLACEHOLDER
-      { time: '1:00 PM', session: 'Lunch Break' }, // PLACEHOLDER
-      { time: '2:00 PM', session: 'Session 2 (details TBA)' }, // PLACEHOLDER
+      { time: '9:00 AM', session: 'Check-in & Welcome' },
+      { time: '9:30 AM', session: 'Session 1 (details TBA)' },
+      { time: '1:00 PM', session: 'Lunch Break' },
+      { time: '2:00 PM', session: 'Session 2 (details TBA)' },
     ],
   },
   {
     day: 'Day 2',
-    date: day2Date,
-    hours: '9:00 AM – 5:00 PM',
+    date: dayLabel(startIso, 1),
+    hours,
     sessions: [
-      { time: '9:00 AM', session: 'Recap & Session 3 (details TBA)' }, // PLACEHOLDER
-      { time: '1:00 PM', session: 'Lunch Break' }, // PLACEHOLDER
-      { time: '2:00 PM', session: 'Build & Wrap-up' }, // PLACEHOLDER
-      { time: '4:30 PM', session: 'Demos & Certificates' }, // PLACEHOLDER
+      { time: '9:00 AM', session: 'Recap & Session 3 (details TBA)' },
+      { time: '1:00 PM', session: 'Lunch Break' },
+      { time: '2:00 PM', session: 'Build & Wrap-up' },
+      { time: '4:30 PM', session: 'Demos & Certificates' },
     ],
   },
 ]
 
-// ---------------------------------------------------------------------------
-// Events — titles, dates, and descriptions below are FINAL COPY from the
-// content team. Do not reword, shorten, or change dates/titles.
-// ---------------------------------------------------------------------------
-export async function getEvents(): Promise<EventData[]> {
-  const EVENTS_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbyR0eRtFiIZjmM4kEQfnhpFODimKANQx-q6SGjNeLZnEYNl0ulPm6ce0AG-UpydPbiU/exec'
+function buildSchedule(r: any, startIso: string | null): ScheduleDay[] {
+  const hours = str(r.timing) || '9:00 AM – 5:00 PM'
+  const days: ScheduleDay[] = []
 
-  const res = await fetch(EVENTS_SHEET_API_URL!, {
-    next: { revalidate: 300 }, // refetch at most every 5 minutes
-  })
+  for (let n = 1; n <= 3; n++) {
+    const lines = toLines(r[`day${n}Sessions`])
+    if (!lines.length) continue
+    days.push({
+      day: `Day ${n}`,
+      date: dayLabel(startIso, n - 1),
+      hours,
+      sessions: lines.map((line) => {
+        const [time, session, speaker] = line.split('|').map((p) => p.trim())
+        return { time: time ?? '', session: session ?? '', speaker: speaker || undefined }
+      }),
+    })
+  }
+  return days.length ? days : defaultSchedule(startIso, hours)
+}
 
-  if (!res.ok) {
-    throw new Error(`Failed to fetch events: ${res.status}`)
+// ---------------------------------------------------------------------------
+// Status
+// ---------------------------------------------------------------------------
+const REGISTRATION_WINDOW_DAYS = 30 // fallback when the sheet has a date but no open date
+
+type StatusInput = Pick<EventData, 'startDate' | 'endDate' | 'registrationOpenDate' | 'registrationCloseDate'> &
+  Partial<Pick<EventData, 'statusOverride' | 'registrationOpen' | 'seatsLeft'>>
+
+export function computeStatus(event: StatusInput, now: Date = new Date()): EventStatus {
+  const o = event.statusOverride ?? 'auto'
+  if (o === 'cancelled') return 'Cancelled'
+  if (o === 'completed') return 'Completed'
+  if (o === 'ongoing') return 'Ongoing'
+
+  const startIso = toIso(event.startDate)
+  const endIso = toIso(event.endDate) ?? startIso
+
+  // Date-based phases (skipped when the sheet forces "upcoming")
+  if (o !== 'upcoming') {
+    if (endIso && now > new Date(`${endIso}T23:59:59`)) return 'Completed'
+    if (startIso && now >= new Date(`${startIso}T00:00:00`)) return 'Ongoing'
   }
 
-  const rows = await res.json()
-
-  return rows.map((r: any): EventData => ({
-    slug: r.slug,
-    tag: r.tag,
-    title: r.title,
-    dateRange: r.dateRange,
-    startDate: r.startDate,
-    endDate: r.endDate,
-    durationBadge: r.durationBadge,
-    mode: r.mode,
-    description: r.description,
-    heroImage: r.heroImage,
-    whatYoullLearn: r.whatYoullLearn,
-    whoShouldAttend: r.whoShouldAttend,
-    toolToInstall: r.toolToInstall,
-    refreshments: r.refreshments,
-    venue: r.venue,
-    address: r.address,
-    mapsLink: r.mapsLink,
-    timing: r.timing,
-    seatsLeft: r.seatsLeft,
-    registrationDeadline: r.registrationDeadline,
-    fee: r.fee,
-    faqs: r.faqs,
-    schedule: defaultSchedule(r.startDate, r.endDate),
-    registrationOpenDate: r.registrationOpenDate || null,
-    registrationCloseDate: r.registrationCloseDate || null,
-    iconKey: r.iconKey || 'sparkles',
-    colorFrom: r.colorFrom || '#F4EEF5',
-    colorTo: r.colorTo || '#EAD3EF',
-    accentColor: r.accentColor || '#704A74',
-    accentDarkColor: r.accentDarkColor || '#3B1F40',
-  }))
-}
-
-export function getEventBySlug(events: EventData[], slug: string): EventData | undefined {
-  return events.find((e) => e.slug === slug)
-}
-
-export function getAllSlugs(events: EventData[]): string[] {
-  return events.map((e) => e.slug)
-}
-
-const REGISTRATION_WINDOW_DAYS = 30 // fallback only, used when sheet has no explicit open date
-
-export function computeStatus(
-  event: Pick<EventData, 'startDate' | 'endDate' | 'registrationOpenDate' | 'registrationCloseDate'>,
-  now: Date = new Date()
-): EventStatus {
-  const end = new Date(`${event.endDate}T23:59:59`)
-  if (now > end) return 'Completed'
-
-  if (event.registrationCloseDate) {
-    const closeDate = new Date(`${event.registrationCloseDate}T23:59:59`)
-    if (now > closeDate) return 'Completed'
+  // Upcoming: work out the registration state
+  if (event.registrationOpen === false) return 'Coming Soon'
+  if (event.seatsLeft === 0) return 'Full'
+  if (event.registrationCloseDate && now > new Date(`${event.registrationCloseDate}T23:59:59`)) {
+    return 'Registration Closed'
   }
+  if (event.registrationOpen === true) return 'Open for Registration'
 
-  const openDate = event.registrationOpenDate
-    ? new Date(`${event.registrationOpenDate}T00:00:00`)
-    : new Date(new Date(`${event.startDate}T00:00:00`).getTime() - REGISTRATION_WINDOW_DAYS * 24 * 60 * 60 * 1000)
-
-  return now >= openDate ? 'Open for Registration' : 'Coming Soon'
+  if (event.registrationOpenDate) {
+    return now >= new Date(`${event.registrationOpenDate}T00:00:00`) ? 'Open for Registration' : 'Coming Soon'
+  }
+  if (startIso) {
+    const opens = new Date(`${startIso}T00:00:00`).getTime() - REGISTRATION_WINDOW_DAYS * 86400000
+    return now.getTime() >= opens ? 'Open for Registration' : 'Coming Soon'
+  }
+  return 'Coming Soon' // no real dates yet (TBA)
 }
+
+export const canRegister = (event: Pick<EventData, 'status'>) => event.status === 'Open for Registration'
 
 export function getRegistrationUrgency(
   event: Pick<EventData, 'registrationCloseDate'>,
   now: Date = new Date()
 ): { daysLeft: number; isUrgent: boolean } | null {
   if (!event.registrationCloseDate) return null
-  const closeDate = new Date(`${event.registrationCloseDate}T23:59:59`)
-  const daysLeft = Math.ceil((closeDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+  const close = new Date(`${event.registrationCloseDate}T23:59:59`)
+  const daysLeft = Math.ceil((close.getTime() - now.getTime()) / 86400000)
   if (daysLeft < 0) return null
   return { daysLeft, isUrgent: daysLeft <= 5 }
 }
 
+// ---------------------------------------------------------------------------
+// Fetch + map
+// ---------------------------------------------------------------------------
+export async function getEvents(): Promise<EventData[]> {
+  const EVENTS_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyR0eRtFiIZjmM4kEQfnhpFODimKANQx-q6SGjNeLZnEYNl0ulPm6ce0AG-UpydPbiU/exec"
+  const url = EVENTS_SHEET_API_URL // move the Apps Script URL into .env.local
+  if (!url) throw new Error('EVENTS_SHEET_API_URL is not set')
+
+  const res = await fetch(url, { next: { revalidate: 300 } }) // sheet edits show up within ~5 min
+  if (!res.ok) throw new Error(`Failed to fetch events: ${res.status}`)
+
+  const rows: any[] = await res.json()
+
+  const events = rows
+    .filter((r) => r.slug && (str(r.published) === '' ? true : toTriBool(r.published) !== false))
+    .map((r): EventData => {
+      const startIso = toIso(r.startDate)
+      const { fee, isFree } = formatFee(r.registrationFee ?? r.fee)
+
+      const base = {
+        startDate: startIso ?? (str(r.startDate) || 'TBA'),
+        endDate: toIso(r.endDate) ?? startIso ?? (str(r.endDate) || 'TBA'),
+        registrationOpenDate: toIso(r.registrationOpenDate),
+        registrationCloseDate: toIso(r.registrationCloseDate),
+        registrationOpen: toTriBool(r.registrationOpen),
+        seatsLeft: toNum(r.seatsLeft),
+        statusOverride: toOverride(r.status),
+      }
+
+      return {
+        ...base,
+        slug: str(r.slug),
+        tag: str(r.tag),
+        title: str(r.title),
+        dateRange: str(r.dateRange) || 'Date will be announced soon',
+        durationBadge: str(r.durationBadge) || 'TBA',
+        mode: toMode(r.mode),
+        description: str(r.description),
+        heroImage: str(r.heroImage),
+        whatYoullLearn: toLines(r.whatYoullLearn),
+        whoShouldAttend: str(r.whoShouldAttend),
+        toolToInstall: str(r.toolToInstall),
+        refreshments: str(r.refreshments),
+        venue: str(r.venue),
+        address: str(r.address),
+        mapsLink: str(r.mapsLink),
+        timing: str(r.timing),
+        registrationDeadline: str(r.registrationDeadline) || null,
+        fee,
+        isFree,
+        faqs: parseFaqs(r.faqs),
+        schedule: buildSchedule(r, startIso),
+        registrationLink: str(r.registrationLink) || null,
+        status: computeStatus(base),
+        order: toNum(r.order) ?? 999,
+        iconKey: str(r.iconKey) || 'sparkles',
+        colorFrom: str(r.colorFrom) || '#F4EEF5',
+        colorTo: str(r.colorTo) || '#EAD3EF',
+        accentColor: str(r.accentColor) || '#704A74',
+        accentDarkColor: str(r.accentDarkColor) || '#3B1F40',
+      }
+    })
+
+  return events.sort((a, b) => a.order - b.order)
+}
+
+export const getEventBySlug = (events: EventData[], slug: string) => events.find((e) => e.slug === slug)
+export const getAllSlugs = (events: EventData[]) => events.map((e) => e.slug)
+
+/** Next event with a real date that hasn't started yet. TBA, ongoing, completed and cancelled events are skipped. */
 export function getNextUpcomingEvent(events: EventData[], now: Date = new Date()): EventData | undefined {
-  const upcoming = events
-    .filter((e) => new Date(`${e.endDate}T23:59:59`) >= now)
-    .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
-  return upcoming[0]
+  return events
+    .filter(
+      (e) =>
+        hasValidDate(e) &&
+        e.status !== 'Cancelled' &&
+        new Date(`${e.startDate}T23:59:59`) >= now
+    )
+    .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())[0]
 }

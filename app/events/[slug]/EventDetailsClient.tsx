@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Poppins } from 'next/font/google'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, ArrowRight, Calendar, Clock, MapPin, CheckCircle2, ChevronDown, Users, Laptop, IdCard, Utensils, Award, Wrench, Ticket, Armchair, Timer } from 'lucide-react';
 import Navbar from '@/components/navbar'
 import RiseLabFooter from '@/components/events/riselabfooter'
-import { standardChecklist, EventData } from '@/lib/events-data'
+import { standardChecklist, EventData, EventMode, EventStatus, computeStatus, hasValidDate } from '@/lib/events-data'
 import StatusBadge from '@/components/events/StatusBadge'
 import CountdownWidget from '@/components/events/CountdownWidget'
 import AddToCalendarButton from '@/components/events/AddToCalendarButton'
@@ -24,17 +24,20 @@ const INK = '#241A26'
 const INK_SOFT = '#7A6E7E'
 const CREAM = '#FDFBFC'
 
-function ModeBadge({ mode }: { mode: 'Offline' | 'Online' }) {
-    const isOffline = mode === 'Offline'
+const MODE_STYLES: Record<EventMode, { bg: string; dot: string }> = {
+    Offline: { bg: 'rgba(46,111,176,0.18)', dot: '#7EB2E8' },
+    Online: { bg: 'rgba(193,112,31,0.18)', dot: '#F0B87A' },
+    Hybrid: { bg: 'rgba(38,138,99,0.22)', dot: '#7FD8B0' },
+}
+
+function ModeBadge({ mode }: { mode: EventMode }) {
+    const s = MODE_STYLES[mode]
     return (
         <span
             className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full"
-            style={{
-                backgroundColor: isOffline ? 'rgba(46,111,176,0.18)' : 'rgba(193,112,31,0.18)',
-                color: '#fff',
-            }}
+            style={{ backgroundColor: s.bg, color: '#fff' }}
         >
-            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: isOffline ? '#7EB2E8' : '#F0B87A' }} />
+            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: s.dot }} />
             {mode}
         </span>
     )
@@ -72,6 +75,19 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
     const [activeDay, setActiveDay] = useState(0)
     const [openFaq, setOpenFaq] = useState<number | null>(0)
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false)
+
+    // Starts as the server-computed status (no hydration mismatch), then
+    // re-checks on the client so it always agrees with the StatusBadge.
+    const [liveStatus, setLiveStatus] = useState<EventStatus>(event.status)
+    useEffect(() => {
+        setLiveStatus(computeStatus(event))
+    }, [event])
+    const registerable = liveStatus === 'Open for Registration'
+
+    const handleRegister = () =>
+        event.registrationLink
+            ? window.open(event.registrationLink, '_blank', 'noopener,noreferrer')
+            : setIsRegisterModalOpen(true)
 
     const checklist = [
         ...standardChecklist.slice(0, 3),
@@ -117,15 +133,18 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                                 endDate={event.endDate}
                                 registrationOpenDate={event.registrationOpenDate}
                                 registrationCloseDate={event.registrationCloseDate}
+                                statusOverride={event.statusOverride}
+                                registrationOpen={event.registrationOpen}
+                                seatsLeft={event.seatsLeft}
                             />
-                            <AddToCalendarButton
+                            {hasValidDate(event) && <AddToCalendarButton
                                 title={event.title}
                                 description={event.description}
                                 location={event.venue}
                                 startDate={event.startDate}
                                 endDate={event.endDate}
                                 accent={PLUM}
-                            />
+                            />}
                         </div>
 
                         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight mb-6 max-w-2xl">
@@ -146,13 +165,16 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
 
                         <div className="flex flex-wrap items-center gap-6">
                             <button
-                                onClick={() => setIsRegisterModalOpen(true)}
-                                className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm bg-white transition-all cursor-pointer hover:scale-105 hover:shadow-xl active:scale-95"
+                                onClick={handleRegister}
+                                disabled={!registerable}
+                                className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm bg-white transition-all cursor-pointer hover:scale-105 hover:shadow-xl active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
                                 style={{ color: PLUM_DARK }}
                             >
-                                Register Now <ArrowRight size={16} />
+                                {registerable ? <>Register Now <ArrowRight size={16} /></> : liveStatus}
                             </button>
-                            <CountdownWidget targetDate={event.startDate} label="Starts in" variant="dark" />
+                            {hasValidDate(event) && (
+                                <CountdownWidget targetDate={event.startDate} label="Starts in" variant="dark" />
+                            )}
                             {event.registrationCloseDate && (
                                 <CountdownWidget targetDate={event.registrationCloseDate} label="Registration closes in" variant="dark" />
                             )}
@@ -169,6 +191,23 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                         <p className="text-base sm:text-lg leading-relaxed" style={{ color: INK }}>
                             {event.description}
                         </p>
+
+                        {/* Fee / seats / deadline strip */}
+                        <div className="flex flex-wrap gap-3 mt-6">
+                            <span className="px-4 py-2 rounded-full text-xs font-semibold" style={{ backgroundColor: PLUM_TINT, color: PLUM_DARK }}>
+                                Fee: {event.fee}
+                            </span>
+                            {event.seatsLeft !== null && (
+                                <span className="px-4 py-2 rounded-full text-xs font-semibold" style={{ backgroundColor: PLUM_TINT, color: PLUM_DARK }}>
+                                    {event.seatsLeft === 0 ? 'Seats full' : `${event.seatsLeft} seats left`}
+                                </span>
+                            )}
+                            {event.registrationDeadline && /\d/.test(event.registrationDeadline) && (
+                                <span className="px-4 py-2 rounded-full text-xs font-semibold" style={{ backgroundColor: PLUM_TINT, color: PLUM_DARK }}>
+                                    Register by: {event.registrationDeadline}
+                                </span>
+                            )}
+                        </div>
                     </div>
                 </section>
 
@@ -364,11 +403,12 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                 style={{ backgroundColor: '#fff', borderColor: '#EDE4EF' }}
             >
                 <button
-                    onClick={() => setIsRegisterModalOpen(true)}
-                    className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-full font-bold text-sm text-white cursor-pointer"
+                    onClick={handleRegister}
+                    disabled={!registerable}
+                    className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-full font-bold text-sm text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                     style={{ backgroundColor: PLUM }}
                 >
-                    Register Now <ArrowRight size={16} />
+                    {registerable ? <>Register Now <ArrowRight size={16} /></> : liveStatus}
                 </button>
             </div>
 

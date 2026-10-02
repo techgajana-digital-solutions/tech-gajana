@@ -33,7 +33,7 @@ import {
   Check,
 } from 'lucide-react'
 import Navbar from '@/components/navbar'
-import { EventData } from '@/lib/events-data'
+import { EventData, EventMode } from '@/lib/events-data'
 import StatusBadge from '@/components/events/StatusBadge'
 import CountdownWidget from '@/components/events/CountdownWidget'
 import OpinionForm from '@/components/events/OpinionForm'
@@ -95,17 +95,20 @@ function shortDate(iso: string) {
 // ---------------------------------------------------------------------------
 // Mode badge
 // ---------------------------------------------------------------------------
-function ModeBadge({ mode }: { mode: 'Offline' | 'Online' }) {
-  const isOffline = mode === 'Offline'
+const MODE_STYLES: Record<EventMode, { bg: string; text: string; dot: string }> = {
+  Offline: { bg: '#E3EEFA', text: '#1F3A5F', dot: '#2E6FB0' },
+  Online: { bg: '#FBEBDD', text: '#8A4A11', dot: '#C1701F' },
+  Hybrid: { bg: '#E1F3EC', text: '#0F5C42', dot: '#268A63' },
+}
+
+function ModeBadge({ mode }: { mode: EventMode }) {
+  const s = MODE_STYLES[mode]
   return (
     <span
       className="inline-flex items-center gap-1.5 text-[10px] font-semibold px-2.5 py-1 rounded-full"
-      style={{
-        backgroundColor: isOffline ? '#E3EEFA' : '#FBEBDD',
-        color: isOffline ? '#1F3A5F' : '#8A4A11',
-      }}
+      style={{ backgroundColor: s.bg, color: s.text }}
     >
-      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: isOffline ? '#2E6FB0' : '#C1701F' }} />
+      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: s.dot }} />
       {mode}
     </span>
   )
@@ -150,7 +153,10 @@ function BootcampCard({ event, index }: { event: EventData; index: number }) {
               endDate={event.endDate}
               registrationOpenDate={event.registrationOpenDate}
               registrationCloseDate={event.registrationCloseDate}
-              size="sm"
+              statusOverride={event.statusOverride}
+              registrationOpen={event.registrationOpen}
+              seatsLeft={event.seatsLeft}
+              size="sm" // card only; omit on the details page
             />
           </div>
 
@@ -178,7 +184,10 @@ function BootcampCard({ event, index }: { event: EventData; index: number }) {
           className="w-full flex items-center justify-center gap-1.5 py-3 rounded-full text-xs font-bold text-white transition-all cursor-pointer hover:brightness-110 active:scale-[0.97]"
           style={{ backgroundColor: theme.accentDark }}
         >
-          View Details &amp; Register <ChevronRight size={14} />
+          {event.status === 'Completed' || event.status === 'Cancelled'
+            ? 'View Details'
+            : <>View Details &amp; Register</>}{' '}
+          <ChevronRight size={14} />
         </Link>
       </div>
     </motion.div>
@@ -264,6 +273,15 @@ function QuickRegisterForm({ events }: { events: EventData[] }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  if (events.length === 0) {
+    return (
+      <div className="text-center py-10">
+        <h3 className="text-xl font-bold mb-1.5" style={{ color: INK }}>No open registrations right now</h3>
+        <p className="text-sm" style={{ color: INK_SOFT }}>New events are announced soon. Check back shortly!</p>
+      </div>
+    )
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -401,6 +419,12 @@ export default function EventsPageClient({
   const allOffline = events.length > 0 && events.every(e => e.mode === 'Offline')
   const earliestEvent = [...events].sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())[0]
 
+  // Only events people can still sign up for. "Coming Soon" stays in so
+  // people can register interest before dates are announced.
+  const joinable = events.filter((e) =>
+    ['Coming Soon', 'Open for Registration'].includes(e.status)
+  )
+
   // PLACEHOLDER — sample recap photos to preview the design; swap these for
   // real event photography (or wire to a CMS query) once the first bootcamp
   // wraps, per the spec's "empty until first event concludes" rule.
@@ -521,7 +545,7 @@ export default function EventsPageClient({
                   Mark Your Calendars
                 </h2>
                 <p className="text-base max-w-md" style={{ color: INK_SOFT }}>
-                  Five hands-on bootcamps, one journey.
+                  {events.length} hands-on bootcamps, one journey.
                 </p>
               </div>
               <p className={`${caveat.className} text-2xl`} style={{ color: PLUM }}>
@@ -537,7 +561,7 @@ export default function EventsPageClient({
           </div>
         </section>
 
-        
+
         {/* --------------------------------------------------------------- */}
         {/* 4. MOMENTS FROM OUR PAST EVENTS */}
         {/* --------------------------------------------------------------- */}
@@ -666,7 +690,7 @@ export default function EventsPageClient({
               {/* right — quick registration card */}
               <div className="bg-white p-8 sm:p-12 flex items-center">
                 <div className="w-full max-w-md mx-auto">
-                  <QuickRegisterForm events={events} />
+                  <QuickRegisterForm events={joinable} />
                 </div>
               </div>
             </div>
