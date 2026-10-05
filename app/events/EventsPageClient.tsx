@@ -39,6 +39,7 @@ import CountdownWidget from '@/components/events/CountdownWidget'
 import OpinionForm from '@/components/events/OpinionForm'
 import RiseLabFooter from '@/components/events/riselabfooter'
 import { submitRegistration } from '@/lib/eventsRegistration'
+import NoEventsState from '@/components/events/NoEventsState'
 
 // ---------------------------------------------------------------------------
 // Fonts / tokens
@@ -407,9 +408,11 @@ function QuickRegisterForm({ events }: { events: EventData[] }) {
 export default function EventsPageClient({
   events,
   nextEvent,
+  loadError = false,
 }: {
   events: EventData[]
   nextEvent: EventData | undefined
+  loadError?: boolean
 }) {
   const [isOpinionModalOpen, setIsOpinionModalOpen] = useState(false)
   const galleryRef = useRef<HTMLDivElement>(null)
@@ -472,7 +475,13 @@ export default function EventsPageClient({
               <div className="flex flex-wrap gap-6 mb-9">
                 <StatItem
                   icon={<Calendar size={18} />}
-                  label={<>{events.length} Bootcamps<br /><span className="text-xs font-normal" style={{ color: INK_SOFT }}>{durationLabel} each</span></>}
+                  label={
+                    events.length > 0 ? (
+                      <>{events.length} Bootcamps<br /><span className="text-xs font-normal" style={{ color: INK_SOFT }}>{durationLabel} each</span></>
+                    ) : (
+                      <>New Events<br /><span className="text-xs font-normal" style={{ color: INK_SOFT }}>Announced soon</span></>
+                    )
+                  }
                 />
                 <StatItem icon={<MapPin size={18} />} label={<>Offline Sessions<br /><span className="text-xs font-normal" style={{ color: INK_SOFT }}>TechGajana Riselab</span></>} />
                 <StatItem icon={<Mic size={18} />} label={<>TG Talk About<br /><span className="text-xs font-normal" style={{ color: INK_SOFT }}>Online, weekly</span></>} />
@@ -542,22 +551,28 @@ export default function EventsPageClient({
                   <span className="w-5 h-px inline-block" style={{ backgroundColor: PLUM }} /> UPCOMING EVENTS
                 </p>
                 <h2 className="text-4xl sm:text-5xl font-extrabold mb-3" style={{ color: PLUM_DARK }}>
-                  Mark Your Calendars
+                  {events.length > 0 ? 'Mark Your Calendars' : 'Stay Tuned'}
                 </h2>
                 <p className="text-base max-w-md" style={{ color: INK_SOFT }}>
-                  {events.length} hands-on bootcamps, one journey.
+                  {events.length > 0 ? `${events.length} hands-on bootcamps, one journey.` : 'Our next events are being planned.'}
                 </p>
               </div>
-              <p className={`${caveat.className} text-2xl`} style={{ color: PLUM }}>
-                {events.length} Bootcamps {allOffline && '✓ All Offline'} ✓ Beginner Friendly
-              </p>
+              {events.length > 0 && (
+                <p className={`${caveat.className} text-2xl`} style={{ color: PLUM }}>
+                  {events.length} Bootcamps {allOffline && '✓ All Offline'} ✓ Beginner Friendly
+                </p>
+              )}
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
-              {events.map((event, i) => (
-                <BootcampCard key={event.slug} event={event} index={i} />
-              ))}
-            </div>
+            {events.length === 0 ? (
+              <NoEventsState variant="list" loadError={loadError} />
+            ) : (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                {events.map((event, i) => (
+                  <BootcampCard key={event.slug} event={event} index={i} />
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
@@ -659,43 +674,45 @@ export default function EventsPageClient({
         {/* --------------------------------------------------------------- */}
         {/* 5. READY TO JOIN — photo banner + quick registration card       */}
         {/* --------------------------------------------------------------- */}
-        <section className="py-16 sm:py-20 px-6 lg:px-12">
-          <div className="max-w-[1400px] mx-auto">
-            <div className="grid lg:grid-cols-2 rounded-[2rem] overflow-hidden shadow-[0_20px_60px_-25px_rgba(59,31,64,0.35)]">
-              {/* left — photo + script headline + icon row */}
-              <div className="relative min-h-[320px] lg:min-h-[420px] flex flex-col justify-center p-8 sm:p-12" style={{ backgroundColor: PLUM_TINT }}>
-                <div
-                  className="absolute inset-0 bg-cover bg-center"
-                  style={{ backgroundImage: `url(${JOIN_BANNER_IMAGE})` }}
-                />
-                <div className="absolute inset-0" style={{ background: `linear-gradient(100deg, ${PLUM_TINT}F2 20%, ${PLUM_DARK}55 75%)` }} />
+        {joinable.length > 0 && (
+          <section className="py-16 sm:py-20 px-6 lg:px-12">
+            <div className="max-w-[1400px] mx-auto">
+              <div className="grid lg:grid-cols-2 rounded-[2rem] overflow-hidden shadow-[0_20px_60px_-25px_rgba(59,31,64,0.35)]">
+                {/* left — photo + script headline + icon row */}
+                <div className="relative min-h-[320px] lg:min-h-[420px] flex flex-col justify-center p-8 sm:p-12" style={{ backgroundColor: PLUM_TINT }}>
+                  <div
+                    className="absolute inset-0 bg-cover bg-center"
+                    style={{ backgroundImage: `url(${JOIN_BANNER_IMAGE})` }}
+                  />
+                  <div className="absolute inset-0" style={{ background: `linear-gradient(100deg, ${PLUM_TINT}F2 20%, ${PLUM_DARK}55 75%)` }} />
 
-                <div className="relative z-10 max-w-sm">
-                  <p className={`${caveat.className} text-4xl sm:text-5xl leading-tight mb-5`} style={{ color: PLUM_DARK }}>
-                    Your Future in<br />Tech Starts Here!
-                  </p>
-                  <p className="text-sm sm:text-base leading-relaxed mb-8" style={{ color: INK }}>
-                    Don&apos;t just watch from the sidelines. Be a part of something bigger.
-                  </p>
+                  <div className="relative z-10 max-w-sm">
+                    <p className={`${caveat.className} text-4xl sm:text-5xl leading-tight mb-5`} style={{ color: PLUM_DARK }}>
+                      Your Future in<br />Tech Starts Here!
+                    </p>
+                    <p className="text-sm sm:text-base leading-relaxed mb-8" style={{ color: INK }}>
+                      Don&apos;t just watch from the sidelines. Be a part of something bigger.
+                    </p>
 
-                  <div className="flex flex-wrap gap-6">
-                    <IconLabel icon={<BookOpen size={20} />} label="Learn" />
-                    <IconLabel icon={<Wrench size={20} />} label="Build" />
-                    <IconLabel icon={<Trophy size={20} />} label="Compete" />
-                    <IconLabel icon={<Rocket size={20} />} label="Grow" />
+                    <div className="flex flex-wrap gap-6">
+                      <IconLabel icon={<BookOpen size={20} />} label="Learn" />
+                      <IconLabel icon={<Wrench size={20} />} label="Build" />
+                      <IconLabel icon={<Trophy size={20} />} label="Compete" />
+                      <IconLabel icon={<Rocket size={20} />} label="Grow" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* right — quick registration card */}
+                <div className="bg-white p-8 sm:p-12 flex items-center">
+                  <div className="w-full max-w-md mx-auto">
+                    <QuickRegisterForm events={joinable} />
                   </div>
                 </div>
               </div>
-
-              {/* right — quick registration card */}
-              <div className="bg-white p-8 sm:p-12 flex items-center">
-                <div className="w-full max-w-md mx-auto">
-                  <QuickRegisterForm events={joinable} />
-                </div>
-              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
 
       <OpinionModal isOpen={isOpinionModalOpen} onClose={() => setIsOpinionModalOpen(false)} />

@@ -17,3 +17,5 @@ export default async function EventDetailsPage({
 
   return <EventDetailsClient event={event} />
 }
+
+export const revalidate = 60
