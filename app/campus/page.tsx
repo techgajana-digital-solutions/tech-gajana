@@ -33,6 +33,14 @@ import {
   Terminal,
   Users,
   X,
+  Bot,
+  Box,
+  CircuitBoard,
+  Cog,
+  Plane,
+  Radio,
+  ShieldCheck,
+  Wifi,
 } from 'lucide-react'
 import Navbar from '@/components/navbar'
 import Footer from '@/components/footer'
@@ -132,6 +140,78 @@ const techTracks: TechTrack[] = [
     tagline: 'Creative engineering with Unity.',
     topics: ['Unity editor', 'C# scripting', 'Game loop & physics', 'Level design', 'Publishing'],
     outcome: 'Students ship a small playable game.',
+    duration: '6 to 10 weeks',
+  },
+  {
+    id: 'electronics',
+    name: 'Electronics',
+    icon: CircuitBoard,
+    tagline: 'Circuit fundamentals, taught on a real breadboard.',
+    topics: ['Components & circuits', 'Analog & digital basics', 'Sensors & actuators', 'PCB design basics', 'Soldering & testing'],
+    outcome: 'Students design, build, and debug working circuits.',
+    duration: '6 to 8 weeks',
+  },
+  {
+    id: 'embedded',
+    name: 'Embedded Systems',
+    icon: Radio,
+    tagline: 'Programming the chips inside everyday devices.',
+    topics: ['Microcontrollers', 'Arduino & ESP32', 'Embedded C', 'Timers & interrupts', 'Communication protocols'],
+    outcome: 'Students program a microcontroller to run a complete device.',
+    duration: '6 to 10 weeks',
+  },
+  {
+    id: 'iot',
+    name: 'Internet of Things',
+    icon: Wifi,
+    tagline: 'Connect physical devices to the cloud and make them useful.',
+    topics: ['Sensors & connectivity', 'ESP32 / Raspberry Pi', 'MQTT & HTTP', 'Cloud dashboards', 'Smart-device projects'],
+    outcome: 'Students build a connected device with a live cloud dashboard.',
+    duration: '6 to 10 weeks',
+  },
+  {
+    id: 'robotics',
+    name: 'Robotics',
+    icon: Bot,
+    tagline: 'Where code, electronics, and mechanics meet.',
+    topics: ['Motors & drivers', 'Sensor integration', 'Line-follower & obstacle-avoider', 'Control basics', 'ROS introduction'],
+    outcome: 'Students build and demo an autonomous robot.',
+    duration: '8 to 12 weeks',
+  },
+  {
+    id: 'automation',
+    name: 'Automation',
+    icon: Cog,
+    tagline: 'Industrial and home automation, from logic to deployment.',
+    topics: ['PLC fundamentals', 'Ladder logic', 'SCADA & HMI basics', 'Relays & control panels', 'Home automation'],
+    outcome: 'Students automate a working process using control logic.',
+    duration: '6 to 8 weeks',
+  },
+  {
+    id: 'drones',
+    name: 'Drone Technology',
+    icon: Plane,
+    tagline: 'Understand, build, and fly.',
+    topics: ['Drone anatomy', 'Flight controllers', 'Aerodynamics basics', 'Assembly & tuning', 'Safe operation'],
+    outcome: 'Students assemble and fly a working drone.',
+    duration: '4 to 8 weeks',
+  },
+  {
+    id: 'cad',
+    name: '3D Printing & CAD',
+    icon: Box,
+    tagline: 'From a sketch on screen to a part in your hand.',
+    topics: ['CAD fundamentals', '3D modelling', 'Slicing & printing', 'Prototyping workflow', 'Design for fabrication'],
+    outcome: 'Students design and print a functional prototype.',
+    duration: '4 to 6 weeks',
+  },
+  {
+    id: 'security',
+    name: 'Cybersecurity',
+    icon: ShieldCheck,
+    tagline: 'Think like an attacker, defend like an engineer.',
+    topics: ['Networking basics', 'Security fundamentals', 'Ethical hacking intro', 'Web vulnerabilities', 'Secure practices'],
+    outcome: 'Students find and fix vulnerabilities in a practice environment.',
     duration: '6 to 10 weeks',
   },
 ]
@@ -241,16 +321,29 @@ const institutionTypes = [
 
 const designations = ['Principal', 'Director', 'Dean', 'HOD', 'Placement Officer', 'Trustee / Management', 'Other']
 
+// const programInterests = [
+//   'Python',
+//   'Java',
+//   'C & C++',
+//   'Web Development',
+//   'Mobile Apps',
+//   'DSA & Problem Solving',
+//   'AI & Data',
+//   'Cloud & Linux',
+//   'Game Development',
+//   'Electronics',
+//   'Embedded Systems',
+//   'IoT',
+//   'Robotics',
+//   'Automation',
+//   'Drone Technology',
+//   '3D Printing & CAD',
+//   'Cybersecurity',
+//   'Soft Skills',
+//   'Placement Readiness',
+// ]
 const programInterests = [
-  'Python',
-  'Java',
-  'C & C++',
-  'Web Development',
-  'Mobile Apps',
-  'DSA & Problem Solving',
-  'AI & Data',
-  'Cloud & Linux',
-  'Game Development',
+  ...techTracks.map((t) => t.name),
   'Soft Skills',
   'Placement Readiness',
 ]
@@ -307,7 +400,7 @@ function TrackExplorer() {
     <div className="grid lg:grid-cols-12 gap-6 lg:gap-10">
       {/* Track picker */}
       <div className="lg:col-span-4">
-        <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 -mx-4 px-4 lg:mx-0 lg:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible lg:overflow-y-auto lg:max-h-[640px] pb-2 lg:pb-0 lg:pr-2 -mx-4 px-4 lg:mx-0 lg:pl-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {techTracks.map((track) => {
             const Icon = track.icon
             const isActive = track.id === activeId
