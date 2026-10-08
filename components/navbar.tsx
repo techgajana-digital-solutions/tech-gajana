@@ -8,11 +8,12 @@ import { usePathname } from 'next/navigation'
 const navLinks = [
   { label: 'Portfolio', href: '/portfolio' },
   { label: 'Our Services', href: '/services' },
-   { label: 'About Us', href: '/aboutus' },
   // { label: 'Courses', href: '/courses' },
   // { label: 'Store', href: '/store' },
   // { label: 'Articles', href: '/articles' },
+  { label: 'Campus', href: '/campus' },
   { label: 'Events', href: '/events' },
+  { label: 'About Us', href: '/aboutus' },
 ]
 
 export default function Navbar() {
