@@ -283,9 +283,8 @@ function Reveal({
 function Eyebrow({ children, dark = true }: { children: React.ReactNode; dark?: boolean }) {
   return (
     <span
-      className={`inline-block font-mono text-xs tracking-[0.3em] uppercase mb-6 ${
-        dark ? 'text-[#f5d082]' : 'text-neutral-400'
-      }`}
+      className={`inline-block font-mono text-xs tracking-[0.3em] uppercase mb-6 ${dark ? 'text-[#f5d082]' : 'text-neutral-400'
+        }`}
     >
       {children}
     </span>
@@ -316,11 +315,10 @@ function TrackExplorer() {
               <button
                 key={track.id}
                 onClick={() => setActiveId(track.id)}
-                className={`flex items-center gap-3 px-4 py-3.5 rounded-xl border text-left whitespace-nowrap lg:whitespace-normal transition-all duration-300 flex-shrink-0 lg:flex-shrink ${
-                  isActive
-                    ? 'bg-[#f5d082] border-[#f5d082] text-black'
-                    : 'bg-white/[0.03] border-white/10 text-neutral-300 hover:border-[#f5d082]/40 hover:bg-white/[0.06]'
-                }`}
+                className={`flex items-center gap-3 px-4 py-3.5 rounded-xl border text-left whitespace-nowrap lg:whitespace-normal transition-all duration-300 flex-shrink-0 lg:flex-shrink ${isActive
+                  ? 'bg-[#f5d082] border-[#f5d082] text-black'
+                  : 'bg-white/[0.03] border-white/10 text-neutral-300 hover:border-[#f5d082]/40 hover:bg-white/[0.06]'
+                  }`}
               >
                 <Icon size={18} className={isActive ? 'text-black' : 'text-[#f5d082]'} />
                 <span className="font-bold text-sm uppercase tracking-wide">{track.name}</span>
@@ -457,19 +455,28 @@ function EnquiryForm() {
   const toggleInterest = (item: string) =>
     setInterests((prev) => (prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item]))
 
+  const [error, setError] = useState('')
+  const [honeypot, setHoneypot] = useState('')
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
+    setError('')
 
-    // TODO: wire this to your backend (e.g. Supabase insert into an
-    // "institution_enquiries" table, or an email API route). The payload
-    // below is exactly what you'd send.
-    const payload = { ...form, programsOfInterest: interests }
-    console.log('Campus Forge enquiry:', payload)
-
-    await new Promise((r) => setTimeout(r, 700))
-    setSubmitting(false)
-    setSubmitted(true)
+    try {
+      const res = await fetch('/api/enquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, programsOfInterest: interests, website: honeypot }),
+      })
+      const result = await res.json()
+      if (!res.ok || !result.ok) throw new Error(result.error || 'Failed')
+      setSubmitted(true)
+    } catch {
+      setError('Something went wrong. Please try again, or email us at info@techgajana.org.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const fieldClass =
@@ -621,11 +628,10 @@ function EnquiryForm() {
                 type="button"
                 key={item}
                 onClick={() => toggleInterest(item)}
-                className={`px-4 py-2 rounded-full border text-xs font-mono uppercase tracking-wide transition-all duration-200 ${
-                  selected
-                    ? 'bg-[#f5d082] border-[#f5d082] text-black font-bold'
-                    : 'bg-black/40 border-white/15 text-neutral-300 hover:border-[#f5d082]/50'
-                }`}
+                className={`px-4 py-2 rounded-full border text-xs font-mono uppercase tracking-wide transition-all duration-200 ${selected
+                  ? 'bg-[#f5d082] border-[#f5d082] text-black font-bold'
+                  : 'bg-black/40 border-white/15 text-neutral-300 hover:border-[#f5d082]/50'
+                  }`}
               >
                 {item}
               </button>
@@ -644,6 +650,20 @@ function EnquiryForm() {
           placeholder="Your goals, timeline, or specific challenges with student skill levels..."
         />
       </div>
+
+      {/* Honeypot: hidden from real users */}
+      <input
+        type="text"
+        name="website"
+        value={honeypot}
+        onChange={(e) => setHoneypot(e.target.value)}
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="absolute left-[-9999px] h-0 w-0 opacity-0"
+      />
+
+      {error && <p className="text-sm text-red-400">{error}</p>}
 
       <button
         type="submit"
@@ -785,9 +805,9 @@ export default function CampusForgePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              
+
             >
-             
+
             </motion.div>
 
             <div className="uppercase font-black tracking-tighter leading-[0.88] text-[13vw] md:text-[9vw] lg:text-[8rem] mb-10">
@@ -1168,7 +1188,7 @@ export default function CampusForgePage() {
           </div>
         </section>
       </main>
-    <EnquiryModal open={enquiryOpen} onClose={() => setEnquiryOpen(false)} />
+      <EnquiryModal open={enquiryOpen} onClose={() => setEnquiryOpen(false)} />
     </>
   )
 }
