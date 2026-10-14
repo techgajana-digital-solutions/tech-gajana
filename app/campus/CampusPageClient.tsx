@@ -400,7 +400,7 @@ function TrackExplorer() {
     <div className="grid lg:grid-cols-12 gap-6 lg:gap-10">
       {/* Track picker */}
       <div className="lg:col-span-4">
-        <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible lg:overflow-y-auto lg:max-h-[640px] pb-2 lg:pb-0 lg:pr-2 -mx-4 px-4 lg:mx-0 lg:pl-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex lg:flex-col gap-2 lg:overflow-y-auto lg:max-h-[640px] lg:pr-2">
           {techTracks.map((track) => {
             const Icon = track.icon
             const isActive = track.id === activeId
@@ -408,13 +408,13 @@ function TrackExplorer() {
               <button
                 key={track.id}
                 onClick={() => setActiveId(track.id)}
-                className={`flex items-center gap-3 px-4 py-3.5 rounded-xl border text-left whitespace-nowrap lg:whitespace-normal transition-all duration-300 flex-shrink-0 lg:flex-shrink ${isActive
+                className={`flex min-h-12 min-w-0 items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 rounded-xl border text-left transition-all duration-300 ${isActive
                   ? 'bg-[#f5d082] border-[#f5d082] text-black'
                   : 'bg-white/[0.03] border-white/10 text-neutral-300 hover:border-[#f5d082]/40 hover:bg-white/[0.06]'
                   }`}
               >
-                <Icon size={18} className={isActive ? 'text-black' : 'text-[#f5d082]'} />
-                <span className="font-bold text-sm uppercase tracking-wide">{track.name}</span>
+                <Icon size={16} className={`flex-shrink-0 sm:w-[18px] sm:h-[18px] ${isActive ? 'text-black' : 'text-[#f5d082]'}`} />
+                <span className="min-w-0 break-words text-xs sm:text-sm font-bold uppercase leading-tight tracking-wide lg:text-left">{track.name}</span>
               </button>
             )
           })}
@@ -428,7 +428,7 @@ function TrackExplorer() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-          className="relative h-full p-8 md:p-12 rounded-[2rem] border border-[#f5d082]/25 bg-white/[0.03] overflow-hidden"
+          className="relative h-full p-5 sm:p-8 md:p-12 rounded-3xl sm:rounded-[2rem] border border-[#f5d082]/25 bg-white/[0.03] overflow-hidden"
         >
           <div className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full bg-[#f5d082]/10 blur-[100px]" />
 
@@ -437,10 +437,10 @@ function TrackExplorer() {
               <ActiveIcon size={26} className="text-[#f5d082]" />
             </div>
 
-            <h3 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-3 text-white">
+            <h3 className="break-words text-2xl sm:text-3xl md:text-5xl font-black uppercase tracking-tighter mb-3 text-white">
               {active.name}
             </h3>
-            <p className="text-lg md:text-xl text-neutral-400 font-medium leading-relaxed mb-8 max-w-xl">
+            <p className="text-base sm:text-lg md:text-xl text-neutral-400 font-medium leading-relaxed mb-6 sm:mb-8 max-w-xl">
               {active.tagline}
             </p>
 
@@ -451,7 +451,7 @@ function TrackExplorer() {
               {active.topics.map((topic) => (
                 <span
                   key={topic}
-                  className="px-3.5 py-1.5 rounded-full border border-white/15 bg-black/40 text-xs font-mono uppercase tracking-wide text-neutral-200"
+                  className="max-w-full break-words px-3 py-1.5 rounded-full border border-white/15 bg-black/40 text-[10px] sm:text-xs font-mono uppercase tracking-wide text-neutral-200"
                 >
                   {topic}
                 </span>
@@ -1004,15 +1004,15 @@ export default function CampusForgePage() {
         </section>
 
         {/* 4. TECHNICAL TRACKS */}
-        <section id="programs" className="relative py-24 md:py-40 px-4 sm:px-6 lg:px-12 bg-[#0a0a0a] border-b border-white/10 overflow-hidden">
+        <section id="programs" className="relative py-16 sm:py-24 md:py-40 px-4 sm:px-6 lg:px-12 bg-[#0a0a0a] border-b border-white/10 overflow-hidden">
           <div className="pointer-events-none absolute top-0 right-0 w-[600px] h-[600px] bg-[#f5d082]/5 rounded-full blur-[180px]" />
           <div className="max-w-[1600px] mx-auto relative">
-            <Reveal className="mb-14 md:mb-20">
+            <Reveal className="mb-10 sm:mb-14 md:mb-20">
               <Eyebrow>technical skills</Eyebrow>
-              <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter leading-[0.9] mb-6">
+              <h2 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter leading-[0.9] mb-6">
                 Languages & <br className="sm:hidden" />tools.
               </h2>
-              <p className="text-lg md:text-xl text-neutral-400 max-w-2xl font-medium leading-relaxed">
+              <p className="text-base sm:text-lg md:text-xl text-neutral-400 max-w-2xl font-medium leading-relaxed">
                 Pick a track to see exactly what your students will learn,
                 what they'll build, and how long it takes.
               </p>
