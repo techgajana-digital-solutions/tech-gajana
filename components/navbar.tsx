@@ -14,6 +14,7 @@ const navLinks = [
   { label: 'Campus', href: '/campus' },
   { label: 'Events', href: '/events' },
   { label: 'About Us', href: '/aboutus' },
+  { label: 'Careers', href: '/careers' },
 ]
 
 export default function Navbar() {
