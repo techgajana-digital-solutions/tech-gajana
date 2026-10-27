@@ -159,7 +159,7 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                                 <Clock size={14} /> {event.durationBadge}
                             </span>
                             <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/15 backdrop-blur-sm text-white text-xs sm:text-sm font-medium border border-white/20">
-                                <MapPin size={14} /> {event.venue}
+                                <MapPin size={14} /> {(event.mode === 'Online' ? 'Online' : event.venue)}
                             </span>
                         </div>
 
@@ -214,7 +214,7 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                 {/* ------------------------------------------------------------- */}
                 {/* 3. SCHEDULE / AGENDA */}
                 {/* ------------------------------------------------------------- */}
-                <section className="py-14 sm:py-20 px-6 lg:px-12" style={{ backgroundColor: PLUM_TINT }}>
+                {/* <section className="py-14 sm:py-20 px-6 lg:px-12" style={{ backgroundColor: PLUM_TINT }}>
                     <div className="max-w-3xl mx-auto">
                         <p className="text-xs font-bold tracking-[0.15em] mb-3" style={{ color: PLUM }}>SCHEDULE</p>
                         <h2 className="text-2xl sm:text-3xl font-extrabold mb-8" style={{ color: PLUM_DARK }}>
@@ -258,7 +258,7 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                             </div>
                         </div>
                     </div>
-                </section>
+                </section> */}
 
                 {/* ------------------------------------------------------------- */}
                 {/* 4. WHAT YOU'LL LEARN */}
@@ -300,7 +300,7 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                 {/* ------------------------------------------------------------- */}
                 {/* 6. THINGS TO KNOW BEFORE YOU COME */}
                 {/* ------------------------------------------------------------- */}
-                <section className="py-14 sm:py-20 px-6 lg:px-12">
+                {/* <section className="py-14 sm:py-20 px-6 lg:px-12">
                     <div className="max-w-3xl mx-auto">
                         <p className="text-xs font-bold tracking-[0.15em] mb-3" style={{ color: PLUM }}>THINGS TO KNOW BEFORE YOU COME</p>
                         <h2 className="text-2xl sm:text-3xl font-extrabold mb-8" style={{ color: PLUM_DARK }}>
@@ -321,7 +321,7 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                             })}
                         </div>
                     </div>
-                </section>
+                </section> */}
 
                 {/* ------------------------------------------------------------- */}
                 {/* 7. VENUE & TIMING */}
@@ -330,13 +330,13 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                     <div className="max-w-3xl mx-auto">
                         <p className="text-xs font-bold tracking-[0.15em] mb-3" style={{ color: PLUM }}>VENUE & TIMING</p>
                         <h2 className="text-2xl sm:text-3xl font-extrabold mb-8" style={{ color: PLUM_DARK }}>
-                            {event.venue}
+                            {event.mode === 'Online' ? 'Online Event' : event.venue}
                         </h2>
 
                         <div className="grid sm:grid-cols-2 gap-6 mb-6">
                             <div className="bg-white rounded-2xl p-5">
                                 <p className="text-xs font-semibold mb-1" style={{ color: INK_SOFT }}>Address</p>
-                                <p className="text-sm font-medium" style={{ color: INK }}>{event.address}</p>
+                                <p className="text-sm font-medium" style={{ color: INK }}>{event.mode === 'Online' ? 'Online Event' : event.address}</p>
                             </div>
                             <div className="bg-white rounded-2xl p-5">
                                 <p className="text-xs font-semibold mb-1" style={{ color: INK_SOFT }}>Timing</p>
@@ -348,7 +348,7 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                 team to confirm exact venue name once finalized. */}
                         <div className="rounded-[1.5rem] overflow-hidden border border-gray-100 shadow-sm mb-4" style={{ height: 320 }}>
                             <iframe
-                                title={`Map to ${event.venue}`}
+                                title={`Map to ${event.mode === 'Online' ? 'Online Event' : event.venue}`}
                                 src={mapEmbedSrc}
                                 width="100%"
                                 height="100%"
