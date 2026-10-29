@@ -100,6 +100,29 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
         `${event.venue}, ${event.address}`
     )}&output=embed`
 
+    // A cell counts as "empty" if it's blank, false, or the text "FALSE"/"false".
+    // Google Sheets turns a typed false (or an unticked checkbox) into "FALSE".
+    const isBlank = (value: unknown) => {
+        if (value === null || value === undefined || value === false) return true
+        const text = String(value).trim().toLowerCase()
+        return text === '' || text === 'false'
+    }
+
+    // Keep only sessions that have real content, then keep only days that
+    // still have at least one session.
+    const visibleSchedule = (event.schedule ?? [])
+        .map((d) => ({
+            ...d,
+            sessions: (d.sessions ?? []).filter((s) => !isBlank(s.session)),
+        }))
+        .filter((d) => d.sessions.length > 0)
+
+    const isOnline = String(event.mode ?? '').trim().toLowerCase() === 'online'
+    const showSchedule = !isOnline && visibleSchedule.length > 0
+
+    // activeDay can point at a day that was filtered out, so keep it in range.
+    const safeDay = Math.min(activeDay, Math.max(visibleSchedule.length - 1, 0))
+
     return (
         <>
             <Navbar />
@@ -214,51 +237,57 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                 {/* ------------------------------------------------------------- */}
                 {/* 3. SCHEDULE / AGENDA */}
                 {/* ------------------------------------------------------------- */}
-                {/* <section className="py-14 sm:py-20 px-6 lg:px-12" style={{ backgroundColor: PLUM_TINT }}>
-                    <div className="max-w-3xl mx-auto">
-                        <p className="text-xs font-bold tracking-[0.15em] mb-3" style={{ color: PLUM }}>SCHEDULE</p>
-                        <h2 className="text-2xl sm:text-3xl font-extrabold mb-8" style={{ color: PLUM_DARK }}>
-                            What each day looks like
-                        </h2>
+                {showSchedule && (
+                    <section className="py-14 sm:py-20 px-6 lg:px-12" style={{ backgroundColor: PLUM_TINT }}>
+                        <div className="max-w-3xl mx-auto">
+                            <p className="text-xs font-bold tracking-[0.15em] mb-3" style={{ color: PLUM }}>SCHEDULE</p>
+                            <h2 className="text-2xl sm:text-3xl font-extrabold mb-8" style={{ color: PLUM_DARK }}>
+                                What each day looks like
+                            </h2>
 
-                        <div className="flex gap-2 mb-6">
-                            {event.schedule.map((d, i) => (
-                                <button
-                                    key={d.day}
-                                    onClick={() => setActiveDay(i)}
-                                    className="flex-1 py-3 rounded-xl text-sm font-bold transition-colors cursor-pointer"
-                                    style={{
-                                        backgroundColor: activeDay === i ? PLUM_DARK : '#ffffff',
-                                        color: activeDay === i ? '#fff' : INK_SOFT,
-                                    }}
-                                >
-                                    {d.day} · {d.date}
-                                </button>
-                            ))}
-                        </div>
+                            {visibleSchedule.length > 1 && (
+                                <div className="flex gap-2 mb-6">
+                                    {visibleSchedule.map((d, i) => (
+                                        <button
+                                            key={d.day}
+                                            onClick={() => setActiveDay(i)}
+                                            className="flex-1 py-3 rounded-xl text-sm font-bold transition-colors cursor-pointer"
+                                            style={{
+                                                backgroundColor: safeDay === i ? PLUM_DARK : '#ffffff',
+                                                color: safeDay === i ? '#fff' : INK_SOFT,
+                                            }}
+                                        >
+                                            {d.day} · {d.date}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
 
-                        <div className="bg-white rounded-[1.5rem] p-6 sm:p-7">
-                            <p className="text-xs font-semibold mb-5" style={{ color: INK_SOFT }}>
-                                {event.schedule[activeDay].hours}
-                            </p>
-                            <div className="space-y-4">
-                                {event.schedule[activeDay].sessions.map((s, i) => (
-                                    <div key={i} className="flex gap-4">
-                                        <span className="text-xs font-bold w-16 flex-shrink-0 pt-0.5" style={{ color: PLUM }}>
-                                            {s.time}
-                                        </span>
-                                        <div className="flex-1 pb-4 border-b last:border-0 last:pb-0" style={{ borderColor: '#F1EDEE' }}>
-                                            <p className="text-sm font-medium" style={{ color: INK }}>{s.session}</p>
-                                            {s.speaker && (
-                                                <p className="text-xs mt-0.5" style={{ color: INK_SOFT }}>{s.speaker}</p>
-                                            )}
+                            <div className="bg-white rounded-[1.5rem] p-6 sm:p-7">
+                                {!isBlank(visibleSchedule[safeDay].hours) && (
+                                    <p className="text-xs font-semibold mb-5" style={{ color: INK_SOFT }}>
+                                        {visibleSchedule[safeDay].hours}
+                                    </p>
+                                )}
+                                <div className="space-y-4">
+                                    {visibleSchedule[safeDay].sessions.map((s, i) => (
+                                        <div key={i} className="flex gap-4">
+                                            <span className="text-xs font-bold w-16 flex-shrink-0 pt-0.5" style={{ color: PLUM }}>
+                                                {s.time}
+                                            </span>
+                                            <div className="flex-1 pb-4 border-b last:border-0 last:pb-0" style={{ borderColor: '#F1EDEE' }}>
+                                                <p className="text-sm font-medium" style={{ color: INK }}>{s.session}</p>
+                                                {!isBlank(s.speaker) && (
+                                                    <p className="text-xs mt-0.5" style={{ color: INK_SOFT }}>{s.speaker}</p>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </section> */}
+                    </section>
+                )}
 
                 {/* ------------------------------------------------------------- */}
                 {/* 4. WHAT YOU'LL LEARN */}
@@ -300,7 +329,7 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                 {/* ------------------------------------------------------------- */}
                 {/* 6. THINGS TO KNOW BEFORE YOU COME */}
                 {/* ------------------------------------------------------------- */}
-                {/* <section className="py-14 sm:py-20 px-6 lg:px-12">
+                <section className="py-14 sm:py-20 px-6 lg:px-12">
                     <div className="max-w-3xl mx-auto">
                         <p className="text-xs font-bold tracking-[0.15em] mb-3" style={{ color: PLUM }}>THINGS TO KNOW BEFORE YOU COME</p>
                         <h2 className="text-2xl sm:text-3xl font-extrabold mb-8" style={{ color: PLUM_DARK }}>
@@ -321,7 +350,7 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                             })}
                         </div>
                     </div>
-                </section> */}
+                </section>
 
                 {/* ------------------------------------------------------------- */}
                 {/* 7. VENUE & TIMING */}
