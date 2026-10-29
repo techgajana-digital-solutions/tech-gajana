@@ -48,6 +48,7 @@ const coreTeam = [
   { name: 'Deepak', role: 'Game Developer',image:'/deepak.jpeg' },
   { name: 'Abinaya', role: 'Tutor' },
   { name: 'Seran', role: 'Software Developer / Tutor',image:'/seran.jpeg' },
+  { name: 'Sindhuja', role: 'Data Analyst Intern',image:'/sindhu.jpg' },
 ]
 
 // ---------------------------------------------------------------------------
