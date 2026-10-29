@@ -4,14 +4,13 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Poppins } from 'next/font/google'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, ArrowRight, Calendar, Clock, MapPin, CheckCircle2, ChevronDown, Users, Laptop, IdCard, Utensils, Award, Wrench, Ticket, Armchair, Timer } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Calendar, Clock, MapPin, CheckCircle2, ChevronDown, Users, Laptop, IdCard, Utensils, Award, Wrench, Timer } from 'lucide-react'
 import Navbar from '@/components/navbar'
 import RiseLabFooter from '@/components/events/riselabfooter'
 import { standardChecklist, EventData, EventMode, EventStatus, computeStatus, hasValidDate } from '@/lib/events-data'
 import StatusBadge from '@/components/events/StatusBadge'
 import CountdownWidget from '@/components/events/CountdownWidget'
 import AddToCalendarButton from '@/components/events/AddToCalendarButton'
-import RegistrationForm from '@/components/events/RegistrationForm'
 import RegistrationModal from '@/components/events/RegistrationModal'
 
 const poppins = Poppins({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'] })
@@ -28,6 +27,44 @@ const MODE_STYLES: Record<EventMode, { bg: string; dot: string }> = {
     Offline: { bg: 'rgba(46,111,176,0.18)', dot: '#7EB2E8' },
     Online: { bg: 'rgba(193,112,31,0.18)', dot: '#F0B87A' },
     Hybrid: { bg: 'rgba(38,138,99,0.22)', dot: '#7FD8B0' },
+}
+
+// A cell counts as "empty" if it's blank, false, or the text "FALSE"/"false".
+// Google Sheets turns a typed false (or an unticked checkbox) into "FALSE".
+const isBlank = (value: unknown) => {
+    if (value === null || value === undefined || value === false) return true
+    const text = String(value).trim().toLowerCase()
+    return text === '' || text === 'false'
+}
+
+// Returns the first non-blank value among the possible key names.
+const pick = (obj: any, keys: string[]): string => {
+    for (const k of keys) {
+        const v = obj?.[k]
+        if (!isBlank(v)) return String(v).trim()
+    }
+    return ''
+}
+
+type ScheduleSession = { time: string; session: string; speaker: string }
+type ScheduleDay = { day: string; date: string; hours: string; sessions: ScheduleSession[] }
+
+function normalizeSchedule(raw: unknown): ScheduleDay[] {
+    if (!Array.isArray(raw)) return []
+    return raw
+        .map((d: any, idx: number): ScheduleDay => ({
+            day: pick(d, ['day', 'Day']) || `Day ${idx + 1}`,
+            date: pick(d, ['date', 'Date']),
+            hours: pick(d, ['hours', 'Hours', 'timing', 'Timing']),
+            sessions: (Array.isArray(d?.sessions) ? d.sessions : [])
+                .map((s: any): ScheduleSession => ({
+                    time: pick(s, ['time', 'Time']),
+                    session: pick(s, ['session', 'Session', 'title', 'Title', 'topic', 'Topic']),
+                    speaker: pick(s, ['speaker', 'Speaker', 'speakers', 'Speakers']),
+                }))
+                .filter((s: ScheduleSession) => s.session !== ''),
+        }))
+        .filter((d) => d.sessions.length > 0)
 }
 
 function ModeBadge({ mode }: { mode: EventMode }) {
@@ -89,6 +126,8 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
             ? window.open(event.registrationLink, '_blank', 'noopener,noreferrer')
             : setIsRegisterModalOpen(true)
 
+    const isOnline = String(event.mode ?? '').trim().toLowerCase() === 'online'
+
     const checklist = [
         ...standardChecklist.slice(0, 3),
         `${event.toolToInstall} (pre-install before arriving)`,
@@ -100,40 +139,23 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
         `${event.venue}, ${event.address}`
     )}&output=embed`
 
-    // A cell counts as "empty" if it's blank, false, or the text "FALSE"/"false".
-    // Google Sheets turns a typed false (or an unticked checkbox) into "FALSE".
-    const isBlank = (value: unknown) => {
-        if (value === null || value === undefined || value === false) return true
-        const text = String(value).trim().toLowerCase()
-        return text === '' || text === 'false'
-    }
-
-    // Keep only sessions that have real content, then keep only days that
-    // still have at least one session.
-    const visibleSchedule = (event.schedule ?? [])
-        .map((d) => ({
-            ...d,
-            sessions: (d.sessions ?? []).filter((s) => !isBlank(s.session)),
-        }))
-        .filter((d) => d.sessions.length > 0)
-
-    const isOnline = String(event.mode ?? '').trim().toLowerCase() === 'online'
-    const showSchedule = !isOnline && visibleSchedule.length > 0
+    // Normalised schedule: tolerant of column-name changes in the sheet,
+    // drops empty sessions, then drops days with no sessions left.
+    const visibleSchedule = normalizeSchedule(event.schedule)
+    const showSchedule = visibleSchedule.length > 0
 
     // activeDay can point at a day that was filtered out, so keep it in range.
     const safeDay = Math.min(activeDay, Math.max(visibleSchedule.length - 1, 0))
+    const currentDay = visibleSchedule[safeDay]
 
     return (
         <>
             <Navbar />
 
             <main className={poppins.className} style={{ backgroundColor: CREAM, color: INK }}>
-                {/* ------------------------------------------------------------- */}
                 {/* 1. EVENT HEADER */}
-                {/* ------------------------------------------------------------- */}
                 <section className="relative pt-28 sm:pt-32 pb-14 sm:pb-20 px-6 lg:px-12 overflow-hidden">
                     <div className="absolute inset-0">
-                        {/* PLACEHOLDER — hero banner image per event */}
                         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${event.heroImage})` }} />
                         <div className="absolute inset-0" style={{ background: `linear-gradient(160deg, ${PLUM_DARK}E6, ${PLUM_DEEPER}F2)` }} />
                     </div>
@@ -160,14 +182,16 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                                 registrationOpen={event.registrationOpen}
                                 seatsLeft={event.seatsLeft}
                             />
-                            {hasValidDate(event) && <AddToCalendarButton
-                                title={event.title}
-                                description={event.description}
-                                location={event.venue}
-                                startDate={event.startDate}
-                                endDate={event.endDate}
-                                accent={PLUM}
-                            />}
+                            {hasValidDate(event) && (
+                                <AddToCalendarButton
+                                    title={event.title}
+                                    description={event.description}
+                                    location={event.venue}
+                                    startDate={event.startDate}
+                                    endDate={event.endDate}
+                                    accent={PLUM}
+                                />
+                            )}
                         </div>
 
                         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight mb-6 max-w-2xl">
@@ -182,7 +206,7 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                                 <Clock size={14} /> {event.durationBadge}
                             </span>
                             <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/15 backdrop-blur-sm text-white text-xs sm:text-sm font-medium border border-white/20">
-                                <MapPin size={14} /> {(event.mode === 'Online' ? 'Online' : event.venue)}
+                                <MapPin size={14} /> {isOnline ? 'Online' : event.venue}
                             </span>
                         </div>
 
@@ -205,9 +229,7 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                     </div>
                 </section>
 
-                {/* ------------------------------------------------------------- */}
                 {/* 2. OVERVIEW */}
-                {/* ------------------------------------------------------------- */}
                 <section className="py-14 sm:py-20 px-6 lg:px-12">
                     <div className="max-w-3xl mx-auto">
                         <p className="text-xs font-bold tracking-[0.15em] mb-3" style={{ color: PLUM }}>ABOUT THIS BOOTCAMP</p>
@@ -215,7 +237,6 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                             {event.description}
                         </p>
 
-                        {/* Fee / seats / deadline strip */}
                         <div className="flex flex-wrap gap-3 mt-6">
                             <span className="px-4 py-2 rounded-full text-xs font-semibold" style={{ backgroundColor: PLUM_TINT, color: PLUM_DARK }}>
                                 Fee: {event.fee}
@@ -234,10 +255,8 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                     </div>
                 </section>
 
-                {/* ------------------------------------------------------------- */}
                 {/* 3. SCHEDULE / AGENDA */}
-                {/* ------------------------------------------------------------- */}
-                {showSchedule && (
+                {showSchedule && currentDay && (
                     <section className="py-14 sm:py-20 px-6 lg:px-12" style={{ backgroundColor: PLUM_TINT }}>
                         <div className="max-w-3xl mx-auto">
                             <p className="text-xs font-bold tracking-[0.15em] mb-3" style={{ color: PLUM }}>SCHEDULE</p>
@@ -249,7 +268,7 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                                 <div className="flex gap-2 mb-6">
                                     {visibleSchedule.map((d, i) => (
                                         <button
-                                            key={d.day}
+                                            key={`${d.day}-${i}`}
                                             onClick={() => setActiveDay(i)}
                                             className="flex-1 py-3 rounded-xl text-sm font-bold transition-colors cursor-pointer"
                                             style={{
@@ -257,27 +276,27 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                                                 color: safeDay === i ? '#fff' : INK_SOFT,
                                             }}
                                         >
-                                            {d.day} · {d.date}
+                                            {d.day}{d.date ? ` · ${d.date}` : ''}
                                         </button>
                                     ))}
                                 </div>
                             )}
 
                             <div className="bg-white rounded-[1.5rem] p-6 sm:p-7">
-                                {!isBlank(visibleSchedule[safeDay].hours) && (
+                                {currentDay.hours && (
                                     <p className="text-xs font-semibold mb-5" style={{ color: INK_SOFT }}>
-                                        {visibleSchedule[safeDay].hours}
+                                        {currentDay.hours}
                                     </p>
                                 )}
                                 <div className="space-y-4">
-                                    {visibleSchedule[safeDay].sessions.map((s, i) => (
+                                    {currentDay.sessions.map((s, i) => (
                                         <div key={i} className="flex gap-4">
                                             <span className="text-xs font-bold w-16 flex-shrink-0 pt-0.5" style={{ color: PLUM }}>
                                                 {s.time}
                                             </span>
                                             <div className="flex-1 pb-4 border-b last:border-0 last:pb-0" style={{ borderColor: '#F1EDEE' }}>
                                                 <p className="text-sm font-medium" style={{ color: INK }}>{s.session}</p>
-                                                {!isBlank(s.speaker) && (
+                                                {s.speaker && (
                                                     <p className="text-xs mt-0.5" style={{ color: INK_SOFT }}>{s.speaker}</p>
                                                 )}
                                             </div>
@@ -289,9 +308,7 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                     </section>
                 )}
 
-                {/* ------------------------------------------------------------- */}
                 {/* 4. WHAT YOU'LL LEARN */}
-                {/* ------------------------------------------------------------- */}
                 <section className="py-14 sm:py-20 px-6 lg:px-12">
                     <div className="max-w-3xl mx-auto">
                         <p className="text-xs font-bold tracking-[0.15em] mb-3" style={{ color: PLUM }}>WHAT YOU&apos;LL LEARN</p>
@@ -309,9 +326,7 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                     </div>
                 </section>
 
-                {/* ------------------------------------------------------------- */}
                 {/* 5. WHO SHOULD ATTEND */}
-                {/* ------------------------------------------------------------- */}
                 <section className="py-14 sm:py-20 px-6 lg:px-12" style={{ backgroundColor: PLUM_TINT }}>
                     <div className="max-w-3xl mx-auto">
                         <div className="flex items-start gap-4 bg-white rounded-[1.5rem] p-7">
@@ -326,9 +341,7 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                     </div>
                 </section>
 
-                {/* ------------------------------------------------------------- */}
                 {/* 6. THINGS TO KNOW BEFORE YOU COME */}
-                {/* ------------------------------------------------------------- */}
                 <section className="py-14 sm:py-20 px-6 lg:px-12">
                     <div className="max-w-3xl mx-auto">
                         <p className="text-xs font-bold tracking-[0.15em] mb-3" style={{ color: PLUM }}>THINGS TO KNOW BEFORE YOU COME</p>
@@ -352,20 +365,18 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                     </div>
                 </section>
 
-                {/* ------------------------------------------------------------- */}
                 {/* 7. VENUE & TIMING */}
-                {/* ------------------------------------------------------------- */}
                 <section className="py-14 sm:py-20 px-6 lg:px-12" style={{ backgroundColor: PLUM_TINT }}>
                     <div className="max-w-3xl mx-auto">
-                        <p className="text-xs font-bold tracking-[0.15em] mb-3" style={{ color: PLUM }}>VENUE & TIMING</p>
+                        <p className="text-xs font-bold tracking-[0.15em] mb-3" style={{ color: PLUM }}>VENUE &amp; TIMING</p>
                         <h2 className="text-2xl sm:text-3xl font-extrabold mb-8" style={{ color: PLUM_DARK }}>
-                            {event.mode === 'Online' ? 'Online Event' : event.venue}
+                            {isOnline ? 'Online Event' : event.venue}
                         </h2>
 
                         <div className="grid sm:grid-cols-2 gap-6 mb-6">
                             <div className="bg-white rounded-2xl p-5">
                                 <p className="text-xs font-semibold mb-1" style={{ color: INK_SOFT }}>Address</p>
-                                <p className="text-sm font-medium" style={{ color: INK }}>{event.mode === 'Online' ? 'Online Event' : event.address}</p>
+                                <p className="text-sm font-medium" style={{ color: INK }}>{isOnline ? 'Online Event' : event.address}</p>
                             </div>
                             <div className="bg-white rounded-2xl p-5">
                                 <p className="text-xs font-semibold mb-1" style={{ color: INK_SOFT }}>Timing</p>
@@ -373,11 +384,9 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                             </div>
                         </div>
 
-                        {/* Google Maps embed — generated from the venue/address; content
-                team to confirm exact venue name once finalized. */}
                         <div className="rounded-[1.5rem] overflow-hidden border border-gray-100 shadow-sm mb-4" style={{ height: 320 }}>
                             <iframe
-                                title={`Map to ${event.mode === 'Online' ? 'Online Event' : event.venue}`}
+                                title={`Map to ${isOnline ? 'Online Event' : event.venue}`}
                                 src={mapEmbedSrc}
                                 width="100%"
                                 height="100%"
@@ -399,11 +408,7 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                     </div>
                 </section>
 
-
-
-                {/* ------------------------------------------------------------- */}
                 {/* 9. FAQ */}
-                {/* ------------------------------------------------------------- */}
                 {event.faqs.length > 0 && (
                     <section className="py-14 sm:py-20 px-6 lg:px-12">
                         <div className="max-w-2xl mx-auto">
@@ -424,9 +429,7 @@ export default function EventDetailsClient({ event }: { event: EventData }) {
                 <div className="h-20 sm:hidden" />
             </main>
 
-            {/* ------------------------------------------------------------- */}
-            {/* Sticky mobile Register Now bar — opens the popup directly       */}
-            {/* ------------------------------------------------------------- */}
+            {/* Sticky mobile Register Now bar */}
             <div
                 className="fixed bottom-0 left-0 right-0 z-40 sm:hidden px-4 py-3 border-t"
                 style={{ backgroundColor: '#fff', borderColor: '#EDE4EF' }}
