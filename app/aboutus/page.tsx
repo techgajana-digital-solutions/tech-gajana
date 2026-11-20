@@ -45,10 +45,12 @@ const founders = [
 
 const coreTeam = [
   { name: 'Vishnuselvam', role: 'Software Developer', image: '/vishnu.jpg' },
+  { name: 'Seran', role: 'Software Developer / Tutor',image:'/seran.jpeg' },
   { name: 'Deepak', role: 'Game Developer',image:'/deepak.jpeg' },
   { name: 'Abinaya', role: 'Tutor' },
-  { name: 'Seran', role: 'Software Developer / Tutor',image:'/seran.jpeg' },
   { name: 'Sindhuja', role: 'Data Analyst Intern',image:'/sindhu.jpg' },
+  { name: 'Madhan', role: 'BDM',image:'/Madhan.png' },
+
 ]
 
 // ---------------------------------------------------------------------------
