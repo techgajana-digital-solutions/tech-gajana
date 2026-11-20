@@ -25,6 +25,7 @@ import {
   Wallet,
   Megaphone,
   PenTool,
+  Rocket,
 } from 'lucide-react'
 import Navbar from '@/components/navbar'
 import Footer from '@/components/footer'
@@ -106,6 +107,33 @@ const trainerDomains: TrainerDomain[] = [
 ]
 
 const jobs: Job[] = [
+    {
+    id: 'internship',
+    title: 'Interns',
+    icon: Rocket,
+    type: 'Internship (3-6 months)',
+    experienceShort: 'Freshers',
+    experience: 'Freshers and final-year students (no experience needed)',
+    location: LOCATION,
+    about:
+      'Learn by working on real projects with our team. Interns get hands-on exposure to software development, content, marketing, and research instead of just theory.',
+    responsibilities: [
+      'Work on live projects under the guidance of senior team members',
+      'Learn and apply tools and technologies used in our daily work',
+      'Support the team in development, content, design, or marketing tasks',
+      'Take part in team discussions, reviews, and workshops',
+      'Document your work and share progress updates regularly',
+      'Complete a final project or presentation at the end of the internship',
+    ],
+    requirements: [
+      'Pursuing or completed a degree or diploma in CS, IT, Design, Marketing, or a related field',
+      'Basic knowledge in your area of interest (coding, design, writing, or marketing)',
+      'Eagerness to learn and take ownership of tasks',
+      'Good communication and teamwork skills',
+      'Able to commit to the full internship duration',
+    ],
+    nice: 'Personal or college projects, GitHub or portfolio link, any online course certificates',
+  },
    {
     id: 'content',
     title: 'Content Creator',
